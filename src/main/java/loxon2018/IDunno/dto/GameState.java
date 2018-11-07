@@ -3,35 +3,35 @@ package loxon2018.IDunno.dto;
 import java.util.List;
 
 public class GameState {
-	private List<Meteorite> meteorits;
-	private List<Rocket> rockets;
-	private List<Ship> ships;
+	private List<Meteorite> meteoriteStates;
+	private List<Rocket> rocketStates;
+	private List<Ship> shipStates;
 	private List<Standings> standings;
 	private GameStatus gameStatus;
 	private int timeElapsed;
 
-	public List<Meteorite> getMeteorits() {
-		return meteorits;
+	public List<Meteorite> getMeteoriteStates() {
+		return meteoriteStates;
 	}
 
-	public void setMeteorits(List<Meteorite> meteorits) {
-		this.meteorits = meteorits;
+	public void setMeteoriteStates(List<Meteorite> meteorits) {
+		this.meteoriteStates = meteorits;
 	}
 
-	public List<Rocket> getRockets() {
-		return rockets;
+	public List<Rocket> getRocketStates() {
+		return rocketStates;
 	}
 
-	public void setRockets(List<Rocket> rockets) {
-		this.rockets = rockets;
+	public void setRocketStates(List<Rocket> rockets) {
+		this.rocketStates = rockets;
 	}
 
-	public List<Ship> getShips() {
-		return ships;
+	public List<Ship> getShipStates() {
+		return shipStates;
 	}
 
-	public void setShips(List<Ship> ships) {
-		this.ships = ships;
+	public void setShipStates(List<Ship> ships) {
+		this.shipStates = ships;
 	}
 
 	public List<Standings> getStandings() {
@@ -58,4 +58,10 @@ public class GameState {
 		this.timeElapsed = timeElapsed;
 	}
 
+    @Override
+    public String toString() {
+        return "GameState [meteoriteStates=" + meteoriteStates + ", rocketStates=" + rocketStates + ", shipStates=" + shipStates + ", standings=" + standings + ", gameStatus="
+                + gameStatus + ", timeElapsed=" + timeElapsed + "]";
+    }
+	
 }
