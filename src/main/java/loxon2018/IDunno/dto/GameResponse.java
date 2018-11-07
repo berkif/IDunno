@@ -1,12 +1,15 @@
 package loxon2018.IDunno.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class GameResponse {
 	private double shipMoveToX;
 	private double shipMoveToY;
 	private boolean shieldIsActivated;
 	private Double rocketMoveToX;
 	private Double rocketMoveToY;
-	private boolean isUpgraded;
+	@JsonProperty("isUpgraded")
+	private boolean upgraded;
 
 	public double getShipMoveToX() {
 		return shipMoveToX;
@@ -49,11 +52,11 @@ public class GameResponse {
 	}
 
 	public boolean isUpgraded() {
-		return isUpgraded;
+		return upgraded;
 	}
 
 	public void setUpgraded(boolean isUpgraded) {
-		this.isUpgraded = isUpgraded;
+		this.upgraded = isUpgraded;
 	}
 
 }
