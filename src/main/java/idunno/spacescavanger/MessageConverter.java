@@ -23,9 +23,9 @@ public class MessageConverter {
 	}
 
 	<T> T toObject(String message, Class<T> type) {
+		ReplayLog.append(message);
 		try {
 			T converted = mapper.readValue(message, type);
-			System.out.println(converted);
 			return converted;
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Error parsing server response.");
