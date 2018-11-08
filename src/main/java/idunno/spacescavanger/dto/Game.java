@@ -1,4 +1,4 @@
-package loxon2018.IDunno.dto;
+package idunno.spacescavanger.dto;
 
 import java.util.List;
 

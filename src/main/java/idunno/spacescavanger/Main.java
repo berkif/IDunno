@@ -1,4 +1,4 @@
-package loxon2018.IDunno;
+package idunno.spacescavanger;
 
 import java.io.IOException;
 import java.net.URI;

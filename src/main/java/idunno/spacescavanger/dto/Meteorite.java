@@ -1,4 +1,4 @@
-package loxon2018.IDunno.dto;
+package idunno.spacescavanger.dto;
 
 public class Meteorite {
     private int meteoriteRadius;
