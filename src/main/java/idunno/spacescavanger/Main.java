@@ -26,8 +26,10 @@ public class Main {
 				.configurator(configurator)
 				.build();
 
-		webSocket.connectToServer(ClientEndpoint.class, config,
+		ClientEndpoint client = new ClientEndpoint();
+		webSocket.connectToServer(client, config,
 			URI.create("ws://javachallenge.loxon.hu:8080/JavaChallenge2018/websocket"));
 		System.in.read();
+		client.stop();
 	}
 }

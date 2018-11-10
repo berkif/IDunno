@@ -25,6 +25,7 @@ public class MessageConverter {
 
 	<T> T toObject(String message, Class<T> type) {
 		ReplayLog.append(message);
+//		System.out.println(message);
 		try {
 			return mapper.readValue(message, type);
 		} catch (IOException e) {

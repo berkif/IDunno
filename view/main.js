@@ -123,10 +123,10 @@ document.getElementById('next').addEventListener('click', handleNext, false);
 function stepKey(e) {
     if ('37' == e.keyCode) {
         // left arrow
-        step(-1);
+        step(-7);
     } else if ('39' == e.keyCode) {
         // right arrow
-        step(1);
+        step(7);
     }
 }
 document.onkeydown = stepKey;
