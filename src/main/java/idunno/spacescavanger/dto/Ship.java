@@ -2,36 +2,32 @@ package idunno.spacescavanger.dto;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import idunno.spacescavanger.strategy.Position;
 
 @JsonDeserialize(builder = Ship.Builder.class)
 public class Ship {
 	private final int shipID;
-	private final double shipX;
-	private final double shipY;
+	private final Position position;
 	private final boolean shieldIsActivated;
-	@JsonProperty("isUpgraded")
 	private final boolean upgraded;
+	private final String owner;
 
 	private Ship(Builder builder) {
 		this.shipID = builder.shipID;
-		this.shipX = builder.shipX;
-		this.shipY = builder.shipY;
 		this.shieldIsActivated = builder.shieldIsActivated;
 		this.upgraded = builder.upgraded;
+		this.owner = builder.owner;
+		this.position = new Position(builder.shipY, builder.shipX);
+	}
+
+	public Position getPosition() {
+		return position;
 	}
 
 	public int getShipID() {
 		return shipID;
-	}
-
-	public double getShipX() {
-		return shipX;
-	}
-
-	public double getShipY() {
-		return shipY;
 	}
 
 	public boolean isShieldIsActivated() {
@@ -42,29 +38,31 @@ public class Ship {
 		return upgraded;
 	}
 
+	public String getOwner() {
+		return owner;
+	}
+
 	@Override
 	public boolean equals(final Object other) {
 		if (!(other instanceof Ship)) {
 			return false;
 		}
 		Ship castOther = (Ship) other;
-		return Objects.equals(shipID, castOther.shipID) && Objects.equals(shipX, castOther.shipX)
-				&& Objects.equals(shipY, castOther.shipY)
+		return Objects.equals(shipID, castOther.shipID) && Objects.equals(position, castOther.position)
 				&& Objects.equals(shieldIsActivated, castOther.shieldIsActivated)
-				&& Objects.equals(upgraded, castOther.upgraded);
+				&& Objects.equals(upgraded, castOther.upgraded) && Objects.equals(owner, castOther.owner);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(shipID, shipX, shipY, shieldIsActivated, upgraded);
+		return Objects.hash(shipID, position, shieldIsActivated, upgraded, owner);
 	}
 
 	@Override
 	public String toString() {
-		return "Ship [shipID=" + shipID + ", shipX=" + shipX + ", shipY=" + shipY + ", shieldIsActivated="
-				+ shieldIsActivated + ", upgraded=" + upgraded + "]";
+		return "Ship [shipID=" + shipID + ", position=" + position + ", shieldIsActivated=" + shieldIsActivated
+				+ ", upgraded=" + upgraded + ", owner=" + owner + "]";
 	}
-
 	public static Builder builder() {
 		return new Builder();
 	}
@@ -75,6 +73,7 @@ public class Ship {
 		private double shipY;
 		private boolean shieldIsActivated;
 		private boolean upgraded;
+		private String owner;
 
 		private Builder() {
 		}
@@ -99,8 +98,13 @@ public class Ship {
 			return this;
 		}
 
-		public Builder withUpgraded(boolean upgraded) {
+		public Builder withIsUpgraded(boolean upgraded) {
 			this.upgraded = upgraded;
+			return this;
+		}
+
+		public Builder withOwner(String owner) {
+			this.owner = owner;
 			return this;
 		}
 
@@ -108,5 +112,4 @@ public class Ship {
 			return new Ship(this);
 		}
 	}
-
 }

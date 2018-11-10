@@ -4,35 +4,30 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import idunno.spacescavanger.strategy.Position;
+
 @JsonDeserialize(builder = Meteorite.Builder.class)
 public class Meteorite {
 	private final int meteoriteRadius;
 	private final int meteoriteID;
-	private final double meteoriteX;
-	private final double meteoriteY;
+	private final Position position;
 
 	private Meteorite(Builder builder) {
 		this.meteoriteRadius = builder.meteoriteRadius;
 		this.meteoriteID = builder.meteoriteID;
-		this.meteoriteX = builder.meteoriteX;
-		this.meteoriteY = builder.meteoriteY;
+		this.position = new Position(builder.meteoriteY, builder.meteoriteX);
 	}
 
 	public int getMeteoriteRadius() {
 		return meteoriteRadius;
 	}
 
-
 	public int getMeteoriteID() {
 		return meteoriteID;
 	}
 
-	public double getMeteoriteX() {
-		return meteoriteX;
-	}
-
-	public double getMeteoriteY() {
-		return meteoriteY;
+	public Position getPosition() {
+		return position;
 	}
 
 	@Override
@@ -42,23 +37,23 @@ public class Meteorite {
 		}
 		Meteorite castOther = (Meteorite) other;
 		return Objects.equals(meteoriteRadius, castOther.meteoriteRadius)
-				&& Objects.equals(meteoriteID, castOther.meteoriteID)
-				&& Objects.equals(meteoriteX, castOther.meteoriteX) && Objects.equals(meteoriteY, castOther.meteoriteY);
+				&& Objects.equals(meteoriteID, castOther.meteoriteID) && Objects.equals(position, castOther.position);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(meteoriteRadius, meteoriteID, meteoriteX, meteoriteY);
+		return Objects.hash(meteoriteRadius, meteoriteID, position);
+	}
+
+
+	@Override
+	public String toString() {
+		return "Meteorite [meteoriteRadius=" + meteoriteRadius + ", meteoriteID=" + meteoriteID + ", position="
+				+ position + "]";
 	}
 
 	public static Builder builder() {
 		return new Builder();
-	}
-
-	@Override
-	public String toString() {
-		return "Meteorite [meteoriteRadius=" + meteoriteRadius + ", meteoriteID=" + meteoriteID + ", meteoriteX="
-				+ meteoriteX + ", meteoriteY=" + meteoriteY + "]";
 	}
 
 	public static final class Builder {
@@ -94,6 +89,5 @@ public class Meteorite {
 			return new Meteorite(this);
 		}
 	}
-
 
 }

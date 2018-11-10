@@ -8,20 +8,21 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(builder = Game.Builder.class)
 public class Game {
+	private final long timeElapsed;
 	private final int gameLength;// játék hossza, ms
 	private final int mapSizeX;// pálya méret
 	private final int mapSizeY; // pálya méret
 	private final int commandSchedule; // a játék ennyi milliszekundumonként dolgozza fel a beérkezett utasításokat
 	private final int internalSchedule; // a játék ennyi milliszekundumonként frissíti a játéktér belső
 	private final int broadcastSchedule; // a játék ennyi milliszekundumonként küldi el minden játékosnak az aktuális
-                                   // játékállapotot
+	// játékállapotot
 	private final double rocketMovementSpeed; // rakéta sebessége. Ha másodperccel arányos időt szeretnénk megkapni,
-                                        // akkor szorozzuk be 1000/ internalSchedule -el
+	// akkor szorozzuk be 1000/ internalSchedule -el
 	private final int rocketLoadingSchedule; // rakéta visszatöltési idő másodpercben
 	private final int rocketExplosionRadius; // rakéta robbanási sugara
 	private final int rocketRange; // rakéta hatótávolsága
 	private final double shipMovementSpeed; // úrhajó sebessége. Ha másodperccel arányos időt szeretnénk megkapni,
-                                      // akkor szorozzuk be 1000/ internalSchedule -el
+	// akkor szorozzuk be 1000/ internalSchedule -el
 	private final int shipRedeploySchedule; // űrhajó újratermésének ideje másodpercben
 	private final int shipSize; // űrhajó mérete
 	private final int shieldUsingSchedule; // pajzs fenntartási idő
@@ -33,9 +34,8 @@ public class Game {
 	private final List<Player> players;
 	private final List<Ship> spaceships;
 
-
-
 	private Game(Builder builder) {
+		this.timeElapsed = builder.timeElapsed;
 		this.gameLength = builder.gameLength;
 		this.mapSizeX = builder.mapSizeX;
 		this.mapSizeY = builder.mapSizeY;
@@ -58,8 +58,8 @@ public class Game {
 		this.spaceships = builder.spaceships;
 	}
 
-	public static Builder builder() {
-		return new Builder();
+	public long getTimeElapsed() {
+		return timeElapsed;
 	}
 
 	public int getGameLength() {
@@ -70,16 +70,13 @@ public class Game {
 		return mapSizeX;
 	}
 
-
 	public int getMapSizeY() {
 		return mapSizeY;
 	}
 
-
 	public int getCommandSchedule() {
 		return commandSchedule;
 	}
-
 
 	public int getInternalSchedule() {
 		return internalSchedule;
@@ -146,26 +143,13 @@ public class Game {
 	}
 
 	@Override
-	public String toString() {
-		return "Game [gameLength=" + gameLength + ", mapSizeX=" + mapSizeX + ", mapSizeY=" + mapSizeY
-				+ ", commandSchedule=" + commandSchedule + ", internalSchedule=" + internalSchedule
-				+ ", broadcastSchedule=" + broadcastSchedule + ", rocketMovementSpeed=" + rocketMovementSpeed
-				+ ", rocketLoadingSchedule=" + rocketLoadingSchedule + ", rocketExplosionRadius="
-				+ rocketExplosionRadius + ", rocketRange=" + rocketRange + ", shipMovementSpeed=" + shipMovementSpeed
-				+ ", shipRedeploySchedule=" + shipRedeploySchedule + ", shipSize=" + shipSize + ", shieldUsingSchedule="
-				+ shieldUsingSchedule + ", shieldRenewingSchedule=" + shieldRenewingSchedule + ", upgradeScore="
-				+ upgradeScore + ", movementSpeedMultiplier=" + movementSpeedMultiplier + ", meteorites=" + meteorites
-				+ ", players=" + players + ", spaceships=" + spaceships + "]";
-	}
-
-	@Override
 	public boolean equals(final Object other) {
 		if (!(other instanceof Game)) {
 			return false;
 		}
 		Game castOther = (Game) other;
-		return Objects.equals(gameLength, castOther.gameLength) && Objects.equals(mapSizeX, castOther.mapSizeX)
-				&& Objects.equals(mapSizeY, castOther.mapSizeY)
+		return Objects.equals(timeElapsed, castOther.timeElapsed) && Objects.equals(gameLength, castOther.gameLength)
+				&& Objects.equals(mapSizeX, castOther.mapSizeX) && Objects.equals(mapSizeY, castOther.mapSizeY)
 				&& Objects.equals(commandSchedule, castOther.commandSchedule)
 				&& Objects.equals(internalSchedule, castOther.internalSchedule)
 				&& Objects.equals(broadcastSchedule, castOther.broadcastSchedule)
@@ -186,12 +170,31 @@ public class Game {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(gameLength, mapSizeX, mapSizeY, commandSchedule, internalSchedule, broadcastSchedule,
-			rocketMovementSpeed, rocketLoadingSchedule, rocketExplosionRadius, rocketRange, shipMovementSpeed,
-			shipRedeploySchedule, shipSize, shieldUsingSchedule, shieldRenewingSchedule, upgradeScore,
-			movementSpeedMultiplier, meteorites, players, spaceships);
+		return Objects.hash(timeElapsed, gameLength, mapSizeX, mapSizeY, commandSchedule, internalSchedule,
+			broadcastSchedule, rocketMovementSpeed, rocketLoadingSchedule, rocketExplosionRadius, rocketRange,
+			shipMovementSpeed, shipRedeploySchedule, shipSize, shieldUsingSchedule, shieldRenewingSchedule,
+			upgradeScore, movementSpeedMultiplier, meteorites, players, spaceships);
 	}
+
+	@Override
+	public String toString() {
+		return "Game [timeElapsed=" + timeElapsed + ", gameLength=" + gameLength + ", mapSizeX=" + mapSizeX
+				+ ", mapSizeY=" + mapSizeY + ", commandSchedule=" + commandSchedule + ", internalSchedule="
+				+ internalSchedule + ", broadcastSchedule=" + broadcastSchedule + ", rocketMovementSpeed="
+				+ rocketMovementSpeed + ", rocketLoadingSchedule=" + rocketLoadingSchedule + ", rocketExplosionRadius="
+				+ rocketExplosionRadius + ", rocketRange=" + rocketRange + ", shipMovementSpeed=" + shipMovementSpeed
+				+ ", shipRedeploySchedule=" + shipRedeploySchedule + ", shipSize=" + shipSize + ", shieldUsingSchedule="
+				+ shieldUsingSchedule + ", shieldRenewingSchedule=" + shieldRenewingSchedule + ", upgradeScore="
+				+ upgradeScore + ", movementSpeedMultiplier=" + movementSpeedMultiplier + ", meteorites=" + meteorites
+				+ ", players=" + players + ", spaceships=" + spaceships + "]";
+	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
 	public static final class Builder {
+		private long timeElapsed;
 		private int gameLength;
 		private int mapSizeX;
 		private int mapSizeY;
@@ -214,6 +217,11 @@ public class Game {
 		private List<Ship> spaceships = Collections.emptyList();
 
 		private Builder() {
+		}
+
+		public Builder withTimeElapsed(long timeElapsed) {
+			this.timeElapsed = timeElapsed;
+			return this;
 		}
 
 		public Builder withGameLength(int gameLength) {
@@ -320,6 +328,5 @@ public class Game {
 			return new Game(this);
 		}
 	}
-
 
 }

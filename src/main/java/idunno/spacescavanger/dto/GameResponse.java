@@ -1,9 +1,12 @@
 package idunno.spacescavanger.dto;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import idunno.spacescavanger.strategy.Position;
 
 @JsonDeserialize(builder = GameResponse.Builder.class)
 public class GameResponse {
@@ -16,11 +19,13 @@ public class GameResponse {
 	private final boolean upgraded;
 
 	private GameResponse(Builder builder) {
-		this.shipMoveToX = builder.shipMoveToX;
-		this.shipMoveToY = builder.shipMoveToY;
+		this.shipMoveToX = builder.shipMoveToPosition.x();
+		this.shipMoveToY = builder.shipMoveToPosition.y();
 		this.shieldIsActivated = builder.shieldIsActivated;
-		this.rocketMoveToX = builder.rocketMoveToX;
-		this.rocketMoveToY = builder.rocketMoveToY;
+		this.rocketMoveToX = builder.rocketMoveToPosition.map(Position::x)
+				.orElse(null);
+		this.rocketMoveToY = builder.rocketMoveToPosition.map(Position::y)
+				.orElse(null);
 		this.upgraded = builder.upgraded;
 	}
 
@@ -78,23 +83,16 @@ public class GameResponse {
 	}
 
 	public static final class Builder {
-		private double shipMoveToX;
-		private double shipMoveToY;
-		private boolean shieldIsActivated;
-		private Double rocketMoveToX;
-		private Double rocketMoveToY;
-		private boolean upgraded;
+		private Position shipMoveToPosition;
+		private boolean shieldIsActivated = false;
+		private Optional<Position> rocketMoveToPosition = Optional.empty();
+		private boolean upgraded = false;
 
 		private Builder() {
 		}
 
-		public Builder withShipMoveToX(double shipMoveToX) {
-			this.shipMoveToX = shipMoveToX;
-			return this;
-		}
-
-		public Builder withShipMoveToY(double shipMoveToY) {
-			this.shipMoveToY = shipMoveToY;
+		public Builder withShipMoveToPosition(Position position) {
+			this.shipMoveToPosition = position;
 			return this;
 		}
 
@@ -103,16 +101,15 @@ public class GameResponse {
 			return this;
 		}
 
-		public Builder withRocketMoveToX(Double rocketMoveToX) {
-			this.rocketMoveToX = rocketMoveToX;
+		public Builder withRocketMoveToPosition(Optional<Position> position) {
+			this.rocketMoveToPosition = position;
 			return this;
 		}
 
-		public Builder withRocketMoveToY(Double rocketMoveToY) {
-			this.rocketMoveToY = rocketMoveToY;
+		public Builder withRocketMoveToPosition(Position position) {
+			this.rocketMoveToPosition = Optional.of(position);
 			return this;
 		}
-
 		public Builder withUpgraded(boolean upgraded) {
 			this.upgraded = upgraded;
 			return this;

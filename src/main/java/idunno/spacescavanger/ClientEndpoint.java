@@ -25,6 +25,7 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 		this.session = session;
 	}
 
+	@Override
 	public void onMessage(String message) {
 		strategy.ifPresentOrElse(s -> send(s.move(converter.toObject(message, GameState.class))),
 			() -> initStrategy(message));
