@@ -19,13 +19,17 @@ public class Main {
 			@Override
 			public void beforeRequest(Map<String, List<String>> headers) {
 				headers.put("Authorization", Arrays.asList(
-						"Basic " + DatatypeConverter.printBase64Binary("idunno:ZkxIGkO1eqvchhj9apcY".getBytes())));
+					"Basic " + DatatypeConverter.printBase64Binary("idunno:ZkxIGkO1eqvchhj9apcY".getBytes())));
 			}
 		};
-		ClientEndpointConfig config = ClientEndpointConfig.Builder.create().configurator(configurator).build();
+		ClientEndpointConfig config = ClientEndpointConfig.Builder.create()
+				.configurator(configurator)
+				.build();
 
-		webSocket.connectToServer(ClientEndpoint.class, config,
-				URI.create("ws://javachallenge.loxon.hu:8080/JavaChallenge2018/websocket"));
+		ClientEndpoint client = new ClientEndpoint();
+		webSocket.connectToServer(client, config,
+			URI.create("ws://javachallenge.loxon.hu:8080/JavaChallenge2018/websocket"));
 		System.in.read();
+		client.stop();
 	}
 }

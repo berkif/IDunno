@@ -1,46 +1,93 @@
 package idunno.spacescavanger.dto;
 
+import java.util.Objects;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import idunno.spacescavanger.strategy.Position;
+
+@JsonDeserialize(builder = Meteorite.Builder.class)
 public class Meteorite {
-    private int meteoriteRadius;
-    private int meteoriteID;
-    private double meteoriteX;
-    private double meteoriteY;
+	private final int meteoriteRadius;
+	private final int meteoriteID;
+	private final Position position;
 
-    public int getMeteoriteRadius() {
-        return meteoriteRadius;
-    }
+	private Meteorite(Builder builder) {
+		this.meteoriteRadius = builder.meteoriteRadius;
+		this.meteoriteID = builder.meteoriteID;
+		this.position = new Position(builder.meteoriteY, builder.meteoriteX);
+	}
 
-    public void setMeteoriteRadius(int meteoriteRadius) {
-        this.meteoriteRadius = meteoriteRadius;
-    }
+	public int getMeteoriteRadius() {
+		return meteoriteRadius;
+	}
 
-    public int getMeteoriteID() {
-        return meteoriteID;
-    }
+	public int getMeteoriteID() {
+		return meteoriteID;
+	}
 
-    public void setMeteoriteID(int meteoriteID) {
-        this.meteoriteID = meteoriteID;
-    }
+	public Position getPosition() {
+		return position;
+	}
 
-    public double getMeteoriteX() {
-        return meteoriteX;
-    }
+	@Override
+	public boolean equals(final Object other) {
+		if (!(other instanceof Meteorite)) {
+			return false;
+		}
+		Meteorite castOther = (Meteorite) other;
+		return Objects.equals(meteoriteRadius, castOther.meteoriteRadius)
+				&& Objects.equals(meteoriteID, castOther.meteoriteID) && Objects.equals(position, castOther.position);
+	}
 
-    public void setMeteoriteX(double meteoriteX) {
-        this.meteoriteX = meteoriteX;
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(meteoriteRadius, meteoriteID, position);
+	}
 
-    public double getMeteoriteY() {
-        return meteoriteY;
-    }
 
-    public void setMeteoriteY(double meteoriteY) {
-        this.meteoriteY = meteoriteY;
-    }
+	@Override
+	public String toString() {
+		return "Meteorite [meteoriteRadius=" + meteoriteRadius + ", meteoriteID=" + meteoriteID + ", position="
+				+ position + "]";
+	}
 
-    @Override
-    public String toString() {
-        return "Meteorite [meteoriteRadius=" + meteoriteRadius + ", meteoriteID=" + meteoriteID + ", meteoriteX=" + meteoriteX + ", meteoriteY=" + meteoriteY + "]";
-    }
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static final class Builder {
+		private int meteoriteRadius;
+		private int meteoriteID;
+		private double meteoriteX;
+		private double meteoriteY;
+
+		private Builder() {
+		}
+
+		public Builder withMeteoriteRadius(int meteoriteRadius) {
+			this.meteoriteRadius = meteoriteRadius;
+			return this;
+		}
+
+		public Builder withMeteoriteID(int meteoriteID) {
+			this.meteoriteID = meteoriteID;
+			return this;
+		}
+
+		public Builder withMeteoriteX(double meteoriteX) {
+			this.meteoriteX = meteoriteX;
+			return this;
+		}
+
+		public Builder withMeteoriteY(double meteoriteY) {
+			this.meteoriteY = meteoriteY;
+			return this;
+		}
+
+		public Meteorite build() {
+			return new Meteorite(this);
+		}
+	}
 
 }

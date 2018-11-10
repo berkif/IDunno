@@ -1,5 +1,7 @@
 package idunno.spacescavanger;
 
+import static idunno.spacescavanger.dto.GameStatus.ABORTED;
+import static idunno.spacescavanger.dto.GameStatus.ENDED;
 import static java.util.Optional.empty;
 
 import java.util.Optional;
@@ -12,6 +14,7 @@ import javax.websocket.Session;
 import idunno.spacescavanger.dto.Game;
 import idunno.spacescavanger.dto.GameResponse;
 import idunno.spacescavanger.dto.GameState;
+import idunno.spacescavanger.dto.GameStatus;
 import idunno.spacescavanger.strategy.Strategy;
 
 public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<String> {
@@ -25,23 +28,37 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 		this.session = session;
 	}
 
+	@Override
 	public void onMessage(String message) {
-		strategy.ifPresentOrElse(
-				s -> send(s.move(converter.toObject(message, GameState.class))),
+		try {
+			strategy.ifPresentOrElse(s -> {
+				GameState status = converter.toObject(message, GameState.class);
+				GameStatus gameStatus = status.getGameStatus();
+				if (gameStatus == ABORTED || gameStatus == ENDED) {
+					System.out.println(gameStatus);
+					stop();
+				}
+				send(s.move(status));
+			},
 				() -> initStrategy(message));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
+	void stop( ) {
+		sendMessage("{\"stopGame\":\"STOP\"}");
+	}
 	void send(GameResponse response) {
 		sendMessage(converter.toMessage(response));
 	}
-
-	
 
 	private void initStrategy(String message) {
 		strategy = Optional.of(new Strategy.NoStrategy(converter.toObject(message, Game.class)));
 	}
 
 	public void sendMessage(String message) {
-		session.getAsyncRemote().sendText(message);
+		session.getAsyncRemote()
+				.sendText(message);
 	}
 }

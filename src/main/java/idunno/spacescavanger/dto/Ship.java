@@ -1,68 +1,115 @@
 package idunno.spacescavanger.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import idunno.spacescavanger.strategy.Position;
+
+@JsonDeserialize(builder = Ship.Builder.class)
 public class Ship {
-    private int shipID;
-    private double shipX;
-    private double shipY;
-    private boolean shieldIsActivated;
-    @JsonProperty("isUpgraded")
-    private boolean upgraded;
-    private String owner;
+	private final int shipID;
+	private final Position position;
+	private final boolean shieldIsActivated;
+	private final boolean upgraded;
+	private final String owner;
 
-    public int getShipID() {
-        return shipID;
-    }
+	private Ship(Builder builder) {
+		this.shipID = builder.shipID;
+		this.shieldIsActivated = builder.shieldIsActivated;
+		this.upgraded = builder.upgraded;
+		this.owner = builder.owner;
+		this.position = new Position(builder.shipY, builder.shipX);
+	}
 
-    public void setShipID(int shipID) {
-        this.shipID = shipID;
-    }
+	public Position getPosition() {
+		return position;
+	}
 
-    public double getShipX() {
-        return shipX;
-    }
+	public int getShipID() {
+		return shipID;
+	}
 
-    public void setShipX(double shipX) {
-        this.shipX = shipX;
-    }
+	public boolean isShieldIsActivated() {
+		return shieldIsActivated;
+	}
 
-    public double getShipY() {
-        return shipY;
-    }
+	public boolean isUpgraded() {
+		return upgraded;
+	}
 
-    public void setShipY(double shipY) {
-        this.shipY = shipY;
-    }
+	public String getOwner() {
+		return owner;
+	}
 
-    public boolean isShieldIsActivated() {
-        return shieldIsActivated;
-    }
+	@Override
+	public boolean equals(final Object other) {
+		if (!(other instanceof Ship)) {
+			return false;
+		}
+		Ship castOther = (Ship) other;
+		return Objects.equals(shipID, castOther.shipID) && Objects.equals(position, castOther.position)
+				&& Objects.equals(shieldIsActivated, castOther.shieldIsActivated)
+				&& Objects.equals(upgraded, castOther.upgraded) && Objects.equals(owner, castOther.owner);
+	}
 
-    public void setShieldIsActivated(boolean shieldIsActivated) {
-        this.shieldIsActivated = shieldIsActivated;
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(shipID, position, shieldIsActivated, upgraded, owner);
+	}
 
-    public boolean isUpgraded() {
-        return upgraded;
-    }
+	@Override
+	public String toString() {
+		return "Ship [shipID=" + shipID + ", position=" + position + ", shieldIsActivated=" + shieldIsActivated
+				+ ", upgraded=" + upgraded + ", owner=" + owner + "]";
+	}
+	public static Builder builder() {
+		return new Builder();
+	}
 
-    public void setUpgraded(boolean isUpgraded) {
-        this.upgraded = isUpgraded;
-    }
+	public static final class Builder {
+		private int shipID;
+		private double shipX;
+		private double shipY;
+		private boolean shieldIsActivated;
+		private boolean upgraded;
+		private String owner;
 
-    public String getOwner() {
-        return owner;
-    }
+		private Builder() {
+		}
 
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
+		public Builder withShipID(int shipID) {
+			this.shipID = shipID;
+			return this;
+		}
 
-    @Override
-    public String toString() {
-        return "Ship [shipID=" + shipID + ", shipX=" + shipX + ", shipY=" + shipY + ", shieldIsActivated=" + shieldIsActivated + ", upgraded=" + upgraded + ", owner=" + owner
-                + "]";
-    }
+		public Builder withShipX(double shipX) {
+			this.shipX = shipX;
+			return this;
+		}
 
+		public Builder withShipY(double shipY) {
+			this.shipY = shipY;
+			return this;
+		}
+
+		public Builder withShieldIsActivated(boolean shieldIsActivated) {
+			this.shieldIsActivated = shieldIsActivated;
+			return this;
+		}
+
+		public Builder withIsUpgraded(boolean upgraded) {
+			this.upgraded = upgraded;
+			return this;
+		}
+
+		public Builder withOwner(String owner) {
+			this.owner = owner;
+			return this;
+		}
+
+		public Ship build() {
+			return new Ship(this);
+		}
+	}
 }

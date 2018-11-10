@@ -18,16 +18,18 @@ public class MessageConverter {
 		try {
 			return mapper.writeValueAsString(response);
 		} catch (JsonProcessingException e) {
+			System.err.println(e);
 			throw new IllegalStateException("error parsing GameResponse");
 		}
 	}
 
 	<T> T toObject(String message, Class<T> type) {
 		ReplayLog.append(message);
+//		System.out.println(message);
 		try {
-			T converted = mapper.readValue(message, type);
-			return converted;
+			return mapper.readValue(message, type);
 		} catch (IOException e) {
+			System.err.println(e);
 			throw new IllegalArgumentException("Error parsing server response.");
 		}
 
