@@ -26,22 +26,20 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 	}
 
 	public void onMessage(String message) {
-		strategy.ifPresentOrElse(
-				s -> send(s.move(converter.toObject(message, GameState.class))),
-				() -> initStrategy(message));
+		strategy.ifPresentOrElse(s -> send(s.move(converter.toObject(message, GameState.class))),
+			() -> initStrategy(message));
 	}
 
 	void send(GameResponse response) {
 		sendMessage(converter.toMessage(response));
 	}
 
-	
-
 	private void initStrategy(String message) {
 		strategy = Optional.of(new Strategy.NoStrategy(converter.toObject(message, Game.class)));
 	}
 
 	public void sendMessage(String message) {
-		session.getAsyncRemote().sendText(message);
+		session.getAsyncRemote()
+				.sendText(message);
 	}
 }

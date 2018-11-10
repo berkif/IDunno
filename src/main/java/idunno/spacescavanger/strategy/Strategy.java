@@ -21,12 +21,10 @@ public abstract class Strategy {
 
 		@Override
 		public GameResponse move(GameState gameStatus) {
-			GameResponse g = new GameResponse();
-			g.setRocketMoveToX(null);
-			g.setRocketMoveToY(null);
-			g.setShipMoveToX(100);
-			g.setShipMoveToY(100);
-			return g;
+			return GameResponse.builder()
+					.withShipMoveToX(100)
+					.withShipMoveToY(100)
+					.build();
 		}
 
 	}

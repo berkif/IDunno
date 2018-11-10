@@ -1,201 +1,325 @@
 package idunno.spacescavanger.dto;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = Game.Builder.class)
 public class Game {
-    private int gameLength;// játék hossza, ms
-    private int mapSizeX;// pálya méret
-    private int mapSizeY; // pálya méret
-    private int commandSchedule; // a játék ennyi milliszekundumonként dolgozza fel a beérkezett utasításokat
-    private int internalSchedule; // a játék ennyi milliszekundumonként frissíti a játéktér belső
-    private int broadcastSchedule; // a játék ennyi milliszekundumonként küldi el minden játékosnak az aktuális
+	private final int gameLength;// játék hossza, ms
+	private final int mapSizeX;// pálya méret
+	private final int mapSizeY; // pálya méret
+	private final int commandSchedule; // a játék ennyi milliszekundumonként dolgozza fel a beérkezett utasításokat
+	private final int internalSchedule; // a játék ennyi milliszekundumonként frissíti a játéktér belső
+	private final int broadcastSchedule; // a játék ennyi milliszekundumonként küldi el minden játékosnak az aktuális
                                    // játékállapotot
-    private double rocketMovementSpeed; // rakéta sebessége. Ha másodperccel arányos időt szeretnénk megkapni,
+	private final double rocketMovementSpeed; // rakéta sebessége. Ha másodperccel arányos időt szeretnénk megkapni,
                                         // akkor szorozzuk be 1000/ internalSchedule -el
-    private int rocketLoadingSchedule; // rakéta visszatöltési idő másodpercben
-    private int rocketExplosionRadius; // rakéta robbanási sugara
-    private int rocketRange; // rakéta hatótávolsága
-    private double shipMovementSpeed; // úrhajó sebessége. Ha másodperccel arányos időt szeretnénk megkapni,
+	private final int rocketLoadingSchedule; // rakéta visszatöltési idő másodpercben
+	private final int rocketExplosionRadius; // rakéta robbanási sugara
+	private final int rocketRange; // rakéta hatótávolsága
+	private final double shipMovementSpeed; // úrhajó sebessége. Ha másodperccel arányos időt szeretnénk megkapni,
                                       // akkor szorozzuk be 1000/ internalSchedule -el
-    private int shipRedeploySchedule; // űrhajó újratermésének ideje másodpercben
-    private int shipSize; // űrhajó mérete
-    private int shieldUsingSchedule; // pajzs fenntartási idő
-    private int shieldRenewingSchedule; // pajzs visszatöltődési idő másodpercben
-    private int upgradeScore; // űrhajó fejlesztéséhez szükséges pontszám
-    private double movementSpeedMultiplier;// fejlesztés utáni sebességszorzó
+	private final int shipRedeploySchedule; // űrhajó újratermésének ideje másodpercben
+	private final int shipSize; // űrhajó mérete
+	private final int shieldUsingSchedule; // pajzs fenntartási idő
+	private final int shieldRenewingSchedule; // pajzs visszatöltődési idő másodpercben
+	private final int upgradeScore; // űrhajó fejlesztéséhez szükséges pontszám
+	private final double movementSpeedMultiplier;// fejlesztés utáni sebességszorzó
 
-    private List<Meteorite> meteorites;
-    private List<Player> players;
-    private List<Ship> spaceships;
+	private final List<Meteorite> meteorites;
+	private final List<Player> players;
+	private final List<Ship> spaceships;
 
-    public List<Meteorite> getMeteorites() {
-        return meteorites;
-    }
 
-    public void setMeteorites(List<Meteorite> meteorites) {
-        this.meteorites = meteorites;
-    }
 
-    public List<Player> getPlayers() {
-        return players;
-    }
+	private Game(Builder builder) {
+		this.gameLength = builder.gameLength;
+		this.mapSizeX = builder.mapSizeX;
+		this.mapSizeY = builder.mapSizeY;
+		this.commandSchedule = builder.commandSchedule;
+		this.internalSchedule = builder.internalSchedule;
+		this.broadcastSchedule = builder.broadcastSchedule;
+		this.rocketMovementSpeed = builder.rocketMovementSpeed;
+		this.rocketLoadingSchedule = builder.rocketLoadingSchedule;
+		this.rocketExplosionRadius = builder.rocketExplosionRadius;
+		this.rocketRange = builder.rocketRange;
+		this.shipMovementSpeed = builder.shipMovementSpeed;
+		this.shipRedeploySchedule = builder.shipRedeploySchedule;
+		this.shipSize = builder.shipSize;
+		this.shieldUsingSchedule = builder.shieldUsingSchedule;
+		this.shieldRenewingSchedule = builder.shieldRenewingSchedule;
+		this.upgradeScore = builder.upgradeScore;
+		this.movementSpeedMultiplier = builder.movementSpeedMultiplier;
+		this.meteorites = builder.meteorites;
+		this.players = builder.players;
+		this.spaceships = builder.spaceships;
+	}
 
-    public void setPlayers(List<Player> players) {
-        this.players = players;
-    }
+	public static Builder builder() {
+		return new Builder();
+	}
 
-    public List<Ship> getSpaceships() {
-        return spaceships;
-    }
+	public int getGameLength() {
+		return gameLength;
+	}
 
-    public void setSpaceships(List<Ship> spaceships) {
-        this.spaceships = spaceships;
-    }
+	public int getMapSizeX() {
+		return mapSizeX;
+	}
 
-    public int getGameLength() {
-        return gameLength;
-    }
 
-    public void setGameLength(int gameLength) {
-        this.gameLength = gameLength;
-    }
+	public int getMapSizeY() {
+		return mapSizeY;
+	}
 
-    public int getMapSizeX() {
-        return mapSizeX;
-    }
 
-    public void setMapSizeX(int mapSizeX) {
-        this.mapSizeX = mapSizeX;
-    }
+	public int getCommandSchedule() {
+		return commandSchedule;
+	}
 
-    public int getMapSizeY() {
-        return mapSizeY;
-    }
 
-    public void setMapSizeY(int mapSizeY) {
-        this.mapSizeY = mapSizeY;
-    }
+	public int getInternalSchedule() {
+		return internalSchedule;
+	}
 
-    public int getCommandSchedule() {
-        return commandSchedule;
-    }
+	public int getBroadcastSchedule() {
+		return broadcastSchedule;
+	}
 
-    public void setCommandSchedule(int commandSchedule) {
-        this.commandSchedule = commandSchedule;
-    }
+	public double getRocketMovementSpeed() {
+		return rocketMovementSpeed;
+	}
 
-    public int getInternalSchedule() {
-        return internalSchedule;
-    }
+	public int getRocketLoadingSchedule() {
+		return rocketLoadingSchedule;
+	}
 
-    public void setInternalSchedule(int internalSchedule) {
-        this.internalSchedule = internalSchedule;
-    }
+	public int getRocketExplosionRadius() {
+		return rocketExplosionRadius;
+	}
 
-    public int getBroadcastSchedule() {
-        return broadcastSchedule;
-    }
+	public int getRocketRange() {
+		return rocketRange;
+	}
 
-    public void setBroadcastSchedule(int broadcastSchedule) {
-        this.broadcastSchedule = broadcastSchedule;
-    }
+	public double getShipMovementSpeed() {
+		return shipMovementSpeed;
+	}
 
-    public double getRocketMovementSpeed() {
-        return rocketMovementSpeed;
-    }
+	public int getShipRedeploySchedule() {
+		return shipRedeploySchedule;
+	}
 
-    public void setRocketMovementSpeed(double rocketMovementSpeed) {
-        this.rocketMovementSpeed = rocketMovementSpeed;
-    }
+	public int getShipSize() {
+		return shipSize;
+	}
 
-    public int getRocketLoadingSchedule() {
-        return rocketLoadingSchedule;
-    }
+	public int getShieldUsingSchedule() {
+		return shieldUsingSchedule;
+	}
 
-    public void setRocketLoadingSchedule(int rocketLoadingSchedule) {
-        this.rocketLoadingSchedule = rocketLoadingSchedule;
-    }
+	public int getShieldRenewingSchedule() {
+		return shieldRenewingSchedule;
+	}
 
-    public int getRocketExplosionRadius() {
-        return rocketExplosionRadius;
-    }
+	public int getUpgradeScore() {
+		return upgradeScore;
+	}
 
-    public void setRocketExplosionRadius(int rocketExplosionRadius) {
-        this.rocketExplosionRadius = rocketExplosionRadius;
-    }
+	public double getMovementSpeedMultiplier() {
+		return movementSpeedMultiplier;
+	}
 
-    public int getRocketRange() {
-        return rocketRange;
-    }
+	public List<Meteorite> getMeteorites() {
+		return meteorites;
+	}
 
-    public void setRocketRange(int rocketRange) {
-        this.rocketRange = rocketRange;
-    }
+	public List<Player> getPlayers() {
+		return players;
+	}
 
-    public double getShipMovementSpeed() {
-        return shipMovementSpeed;
-    }
+	public List<Ship> getSpaceships() {
+		return spaceships;
+	}
 
-    public void setShipMovementSpeed(double shipMovementSpeed) {
-        this.shipMovementSpeed = shipMovementSpeed;
-    }
+	@Override
+	public String toString() {
+		return "Game [gameLength=" + gameLength + ", mapSizeX=" + mapSizeX + ", mapSizeY=" + mapSizeY
+				+ ", commandSchedule=" + commandSchedule + ", internalSchedule=" + internalSchedule
+				+ ", broadcastSchedule=" + broadcastSchedule + ", rocketMovementSpeed=" + rocketMovementSpeed
+				+ ", rocketLoadingSchedule=" + rocketLoadingSchedule + ", rocketExplosionRadius="
+				+ rocketExplosionRadius + ", rocketRange=" + rocketRange + ", shipMovementSpeed=" + shipMovementSpeed
+				+ ", shipRedeploySchedule=" + shipRedeploySchedule + ", shipSize=" + shipSize + ", shieldUsingSchedule="
+				+ shieldUsingSchedule + ", shieldRenewingSchedule=" + shieldRenewingSchedule + ", upgradeScore="
+				+ upgradeScore + ", movementSpeedMultiplier=" + movementSpeedMultiplier + ", meteorites=" + meteorites
+				+ ", players=" + players + ", spaceships=" + spaceships + "]";
+	}
 
-    public int getShipRedeploySchedule() {
-        return shipRedeploySchedule;
-    }
+	@Override
+	public boolean equals(final Object other) {
+		if (!(other instanceof Game)) {
+			return false;
+		}
+		Game castOther = (Game) other;
+		return Objects.equals(gameLength, castOther.gameLength) && Objects.equals(mapSizeX, castOther.mapSizeX)
+				&& Objects.equals(mapSizeY, castOther.mapSizeY)
+				&& Objects.equals(commandSchedule, castOther.commandSchedule)
+				&& Objects.equals(internalSchedule, castOther.internalSchedule)
+				&& Objects.equals(broadcastSchedule, castOther.broadcastSchedule)
+				&& Objects.equals(rocketMovementSpeed, castOther.rocketMovementSpeed)
+				&& Objects.equals(rocketLoadingSchedule, castOther.rocketLoadingSchedule)
+				&& Objects.equals(rocketExplosionRadius, castOther.rocketExplosionRadius)
+				&& Objects.equals(rocketRange, castOther.rocketRange)
+				&& Objects.equals(shipMovementSpeed, castOther.shipMovementSpeed)
+				&& Objects.equals(shipRedeploySchedule, castOther.shipRedeploySchedule)
+				&& Objects.equals(shipSize, castOther.shipSize)
+				&& Objects.equals(shieldUsingSchedule, castOther.shieldUsingSchedule)
+				&& Objects.equals(shieldRenewingSchedule, castOther.shieldRenewingSchedule)
+				&& Objects.equals(upgradeScore, castOther.upgradeScore)
+				&& Objects.equals(movementSpeedMultiplier, castOther.movementSpeedMultiplier)
+				&& Objects.equals(meteorites, castOther.meteorites) && Objects.equals(players, castOther.players)
+				&& Objects.equals(spaceships, castOther.spaceships);
+	}
 
-    public void setShipRedeploySchedule(int shipRedeploySchedule) {
-        this.shipRedeploySchedule = shipRedeploySchedule;
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(gameLength, mapSizeX, mapSizeY, commandSchedule, internalSchedule, broadcastSchedule,
+			rocketMovementSpeed, rocketLoadingSchedule, rocketExplosionRadius, rocketRange, shipMovementSpeed,
+			shipRedeploySchedule, shipSize, shieldUsingSchedule, shieldRenewingSchedule, upgradeScore,
+			movementSpeedMultiplier, meteorites, players, spaceships);
+	}
+	public static final class Builder {
+		private int gameLength;
+		private int mapSizeX;
+		private int mapSizeY;
+		private int commandSchedule;
+		private int internalSchedule;
+		private int broadcastSchedule;
+		private double rocketMovementSpeed;
+		private int rocketLoadingSchedule;
+		private int rocketExplosionRadius;
+		private int rocketRange;
+		private double shipMovementSpeed;
+		private int shipRedeploySchedule;
+		private int shipSize;
+		private int shieldUsingSchedule;
+		private int shieldRenewingSchedule;
+		private int upgradeScore;
+		private double movementSpeedMultiplier;
+		private List<Meteorite> meteorites = Collections.emptyList();
+		private List<Player> players = Collections.emptyList();
+		private List<Ship> spaceships = Collections.emptyList();
 
-    public int getShipSize() {
-        return shipSize;
-    }
+		private Builder() {
+		}
 
-    public void setShipSize(int shipSize) {
-        this.shipSize = shipSize;
-    }
+		public Builder withGameLength(int gameLength) {
+			this.gameLength = gameLength;
+			return this;
+		}
 
-    public int getShieldUsingSchedule() {
-        return shieldUsingSchedule;
-    }
+		public Builder withMapSizeX(int mapSizeX) {
+			this.mapSizeX = mapSizeX;
+			return this;
+		}
 
-    public void setShieldUsingSchedule(int shieldUsingSchedule) {
-        this.shieldUsingSchedule = shieldUsingSchedule;
-    }
+		public Builder withMapSizeY(int mapSizeY) {
+			this.mapSizeY = mapSizeY;
+			return this;
+		}
 
-    public int getShieldRenewingSchedule() {
-        return shieldRenewingSchedule;
-    }
+		public Builder withCommandSchedule(int commandSchedule) {
+			this.commandSchedule = commandSchedule;
+			return this;
+		}
 
-    public void setShieldRenewingSchedule(int shieldRenewingSchedule) {
-        this.shieldRenewingSchedule = shieldRenewingSchedule;
-    }
+		public Builder withInternalSchedule(int internalSchedule) {
+			this.internalSchedule = internalSchedule;
+			return this;
+		}
 
-    public int getUpgradeScore() {
-        return upgradeScore;
-    }
+		public Builder withBroadcastSchedule(int broadcastSchedule) {
+			this.broadcastSchedule = broadcastSchedule;
+			return this;
+		}
 
-    public void setUpgradeScore(int upgradeScore) {
-        this.upgradeScore = upgradeScore;
-    }
+		public Builder withRocketMovementSpeed(double rocketMovementSpeed) {
+			this.rocketMovementSpeed = rocketMovementSpeed;
+			return this;
+		}
 
-    public double getMovementSpeedMultiplier() {
-        return movementSpeedMultiplier;
-    }
+		public Builder withRocketLoadingSchedule(int rocketLoadingSchedule) {
+			this.rocketLoadingSchedule = rocketLoadingSchedule;
+			return this;
+		}
 
-    public void setMovementSpeedMultiplier(double movementSpeedMultiplier) {
-        this.movementSpeedMultiplier = movementSpeedMultiplier;
-    }
+		public Builder withRocketExplosionRadius(int rocketExplosionRadius) {
+			this.rocketExplosionRadius = rocketExplosionRadius;
+			return this;
+		}
 
-    @Override
-    public String toString() {
-        return "Game [gameLength=" + gameLength + ", mapSizeX=" + mapSizeX + ", mapSizeY=" + mapSizeY + ", commandSchedule=" + commandSchedule + ", internalSchedule="
-                + internalSchedule + ", broadcastSchedule=" + broadcastSchedule + ", rocketMovementSpeed=" + rocketMovementSpeed + ", rocketLoadingSchedule="
-                + rocketLoadingSchedule + ", rocketExplosionRadius=" + rocketExplosionRadius + ", rocketRange=" + rocketRange + ", shipMovementSpeed=" + shipMovementSpeed
-                + ", shipRedeploySchedule=" + shipRedeploySchedule + ", shipSize=" + shipSize + ", shieldUsingSchedule=" + shieldUsingSchedule + ", shieldRenewingSchedule="
-                + shieldRenewingSchedule + ", upgradeScore=" + upgradeScore + ", movementSpeedMultiplier=" + movementSpeedMultiplier + ", meteorites=" + meteorites + ", players="
-                + players + ", spaceships=" + spaceships + "]";
-    }
+		public Builder withRocketRange(int rocketRange) {
+			this.rocketRange = rocketRange;
+			return this;
+		}
+
+		public Builder withShipMovementSpeed(double shipMovementSpeed) {
+			this.shipMovementSpeed = shipMovementSpeed;
+			return this;
+		}
+
+		public Builder withShipRedeploySchedule(int shipRedeploySchedule) {
+			this.shipRedeploySchedule = shipRedeploySchedule;
+			return this;
+		}
+
+		public Builder withShipSize(int shipSize) {
+			this.shipSize = shipSize;
+			return this;
+		}
+
+		public Builder withShieldUsingSchedule(int shieldUsingSchedule) {
+			this.shieldUsingSchedule = shieldUsingSchedule;
+			return this;
+		}
+
+		public Builder withShieldRenewingSchedule(int shieldRenewingSchedule) {
+			this.shieldRenewingSchedule = shieldRenewingSchedule;
+			return this;
+		}
+
+		public Builder withUpgradeScore(int upgradeScore) {
+			this.upgradeScore = upgradeScore;
+			return this;
+		}
+
+		public Builder withMovementSpeedMultiplier(double movementSpeedMultiplier) {
+			this.movementSpeedMultiplier = movementSpeedMultiplier;
+			return this;
+		}
+
+		public Builder withMeteorites(List<Meteorite> meteorites) {
+			this.meteorites = meteorites;
+			return this;
+		}
+
+		public Builder withPlayers(List<Player> players) {
+			this.players = players;
+			return this;
+		}
+
+		public Builder withSpaceships(List<Ship> spaceships) {
+			this.spaceships = spaceships;
+			return this;
+		}
+
+		public Game build() {
+			return new Game(this);
+		}
+	}
+
 
 }
