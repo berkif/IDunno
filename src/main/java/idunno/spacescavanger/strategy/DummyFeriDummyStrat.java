@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import idunno.spacescavanger.coordgeom.Point;
 import idunno.spacescavanger.dto.Game;
 import idunno.spacescavanger.dto.GameResponse;
 import idunno.spacescavanger.dto.GameState;
@@ -21,16 +22,19 @@ public class DummyFeriDummyStrat extends Strategy {
 
 	@Override
 	public GameResponse move(GameState gameStatus) {
-		Map<String, Ship> shipsByOwner = gameStatus.getShipStates().stream()
+		Map<String, Ship> shipsByOwner = gameStatus.getShipStates()
+				.stream()
 				.collect(Collectors.toMap(Ship::getOwner, identity()));
 		List<Meteorite> highestPointsMeteorites = CommonMethods
 				.getHighestPointsMeteorites(gameStatus.getMeteoriteStates());
-		Optional<Position> closestMeteoritePos = CommonMethods.getClosestMeteoritePos(highestPointsMeteorites,
+		Optional<Point> closestMeteoritePos = CommonMethods.getClosestMeteoritePos(highestPointsMeteorites,
 				shipsByOwner.get("idunno").getPosition());
-		Optional<Position> closestMeteoritePosToEnemy = CommonMethods
+		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
 				.getClosestMeteoritePos(gameStatus.getMeteoriteStates(), shipsByOwner.get("bot1").getPosition());
-		return GameResponse.builder().withShipMoveToPosition(closestMeteoritePos.orElse(new Position(100, 100)))
-				.withRocketMoveToPosition(closestMeteoritePosToEnemy).build();
+		return GameResponse.builder()
+				.withShipMoveToPosition(closestMeteoritePos.orElse(new Point(100, 100)))
+				.withRocketMoveToPosition(closestMeteoritePosToEnemy)
+				.build();
 	}
 
 	@Override

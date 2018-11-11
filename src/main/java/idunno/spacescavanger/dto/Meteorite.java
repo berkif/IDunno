@@ -4,18 +4,18 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import idunno.spacescavanger.strategy.Position;
+import idunno.spacescavanger.coordgeom.Point;
 
 @JsonDeserialize(builder = Meteorite.Builder.class)
 public class Meteorite {
 	private final int meteoriteRadius;
 	private final int meteoriteID;
-	private final Position position;
+	private final Point position;
 
 	private Meteorite(Builder builder) {
 		this.meteoriteRadius = builder.meteoriteRadius;
 		this.meteoriteID = builder.meteoriteID;
-		this.position = new Position(builder.meteoriteY, builder.meteoriteX);
+		this.position = new Point(builder.meteoriteY, builder.meteoriteX);
 	}
 
 	public int getMeteoriteRadius() {
@@ -26,7 +26,7 @@ public class Meteorite {
 		return meteoriteID;
 	}
 
-	public Position getPosition() {
+	public Point getPosition() {
 		return position;
 	}
 
@@ -44,7 +44,6 @@ public class Meteorite {
 	public int hashCode() {
 		return Objects.hash(meteoriteRadius, meteoriteID, position);
 	}
-
 
 	@Override
 	public String toString() {

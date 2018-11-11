@@ -171,9 +171,9 @@ public class Game {
 	@Override
 	public int hashCode() {
 		return Objects.hash(timeElapsed, gameLength, mapSizeX, mapSizeY, commandSchedule, internalSchedule,
-			broadcastSchedule, rocketMovementSpeed, rocketLoadingSchedule, rocketExplosionRadius, rocketRange,
-			shipMovementSpeed, shipRedeploySchedule, shipSize, shieldUsingSchedule, shieldRenewingSchedule,
-			upgradeScore, movementSpeedMultiplier, meteorites, players, spaceships);
+				broadcastSchedule, rocketMovementSpeed, rocketLoadingSchedule, rocketExplosionRadius, rocketRange,
+				shipMovementSpeed, shipRedeploySchedule, shipSize, shieldUsingSchedule, shieldRenewingSchedule,
+				upgradeScore, movementSpeedMultiplier, meteorites, players, spaceships);
 	}
 
 	@Override

@@ -4,17 +4,17 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import idunno.spacescavanger.strategy.Position;
+import idunno.spacescavanger.coordgeom.Point;
 
 @JsonDeserialize(builder = Rocket.Builder.class)
 public class Rocket {
 	private final int rocketID;
-	private final Position position;
+	private final Point position;
 	private final String owner;
 
 	private Rocket(Builder builder) {
 		this.rocketID = builder.rocketID;
-		this.position = new Position(builder.rocketY, builder.rocketX);
+		this.position = new Point(builder.rocketY, builder.rocketX);
 		this.owner = builder.owner;
 	}
 
@@ -22,14 +22,13 @@ public class Rocket {
 		return rocketID;
 	}
 
-	public Position getPosition() {
+	public Point getPosition() {
 		return position;
 	}
 
 	public String getOwner() {
 		return owner;
 	}
-
 
 	@Override
 	public boolean equals(final Object other) {
@@ -88,6 +87,5 @@ public class Rocket {
 			return new Rocket(this);
 		}
 	}
-
 
 }

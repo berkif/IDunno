@@ -4,12 +4,12 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import idunno.spacescavanger.strategy.Position;
+import idunno.spacescavanger.coordgeom.Point;
 
 @JsonDeserialize(builder = Ship.Builder.class)
 public class Ship {
 	private final int shipID;
-	private final Position position;
+	private final Point position;
 	private final boolean shieldIsActivated;
 	private final boolean upgraded;
 	private final String owner;
@@ -19,10 +19,10 @@ public class Ship {
 		this.shieldIsActivated = builder.shieldIsActivated;
 		this.upgraded = builder.upgraded;
 		this.owner = builder.owner;
-		this.position = new Position(builder.shipY, builder.shipX);
+		this.position = new Point(builder.shipY, builder.shipX);
 	}
 
-	public Position getPosition() {
+	public Point getPosition() {
 		return position;
 	}
 
@@ -63,6 +63,7 @@ public class Ship {
 		return "Ship [shipID=" + shipID + ", position=" + position + ", shieldIsActivated=" + shieldIsActivated
 				+ ", upgraded=" + upgraded + ", owner=" + owner + "]";
 	}
+
 	public static Builder builder() {
 		return new Builder();
 	}
