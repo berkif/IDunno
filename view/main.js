@@ -26,7 +26,7 @@ function drawInitial() {
 }
 function fillStyle(obj) {
     const myName = 'idunno';
-    return obj.owner != myName ? 'red' : 'black';
+    return obj.owner != myName ? '#DF0101' : '#ACFA58';
 }
 function drawState(state) {
     drawInitial();
@@ -45,35 +45,48 @@ function drawState(state) {
     state.meteoriteStates.forEach(meteorite => {
         ctx.beginPath();
         ctx.arc(meteorite.meteoriteX, meteorite.meteoriteY, meteorite.meteoriteRadius, 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'grey';
+        ctx.fillStyle = '#E6E6E6';
         ctx.fill();
         ctx.lineWidth = 1;
         ctx.strokeStyle = '#333333';
+        ctx.stroke();
+        ctx.font = '14px Arial';
         ctx.fillStyle = 'black';
-        ctx.fillText(meteorite.meteoriteID, meteorite.meteoriteX, meteorite.meteoriteY);
+        ctx.fillText(meteorite.meteoriteID, meteorite.meteoriteX - 3, meteorite.meteoriteY + 5);
+    })
+    state.rocketStates.forEach(rs => {
+        ctx.beginPath();
+        ctx.arc(rs.rocketX, rs.rocketY, 3, 0, 2 * Math.PI, false);
+        ctx.fillStyle = fillStyle(rs);
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#333333';
         ctx.stroke();
         ctx.fillStyle = 'white';
-		meteors.innerHTML +=
-				`<li>id: ${meteorite.meteoriteID}, ` +				
-				`Pos: ${meteorite.meteoriteX};${meteorite.meteoriteY}` +
-				`</li>;`
-    })
-	const rockets = document.getElementById('rockets');
-    rockets.innerHTML = '';
-    state.rocketStates.forEach(rs => {
-            ctx.font = '12px Arial';
-            ctx.fillStyle = fillStyle(rs);
-            ctx.textAlign = 'center';
-            ctx.fillText(rs.rocketID, rs.rocketX, rs.rocketY - 15);
-			rockets.innerHTML +=
-				`<li>Owner: ${rs.owner}, ` +
-				`id: ${rs.rocketID}, ` +				
-				`Pos: ${rs.rocketX};${rs.rocketY}` +
-				`</li>;`
+        ctx.beginPath();
+        ctx.arc(rs.rocketX, rs.rocketY, desc.rocketExplosionRadius, 0, 2 * Math.PI, false);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#333333';
+        ctx.stroke();
+        ctx.font = '10px Arial';
+        ctx.fillStyle = 'black'
+        ctx.textAlign = 'center';
+        ctx.fillText(rs.rocketID, rs.rocketX, rs.rocketY - 15);
     })
     state.shipStates.forEach(ss => {
-    
+        ctx.beginPath();
+        ctx.arc(ss.shipX, ss.shipY, 6, 0, 2 * Math.PI, false);
         ctx.fillStyle = fillStyle(ss);
+        ctx.fill();
+        ctx.lineWidth = 3;
+        if (ss.shieldIsActivated) {
+            ctx.strokeStyle = '#00FFFF'
+        } else {
+            ctx.strokeStyle = '#333333';    
+        }
+        ctx.stroke();
+        ctx.font = '10px Arial';
+        ctx.fillStyle = 'black'
         ctx.textAlign = 'center';
         ctx.fillText(ss.shipID, ss.shipX, ss.shipY - 15);
     })
@@ -118,12 +131,7 @@ function handleFileSelect(evt) {
     };
     reader.readAsText(file);
 }
-function play() {
-    const i = stateIndex;
-    while(i < states.length && inloop) { 
-    console.log('jajaja');
-}
-}
+
 function handleBack(evt) {
     evt.target.disabled = step(-1);
 }
