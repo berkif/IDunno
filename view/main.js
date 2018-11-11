@@ -40,6 +40,8 @@ function drawState(state) {
             `Score: ${standing.score}` +
             `</li>;`
     });
+	const meteors = document.getElementById('meteorites');
+    meteors.innerHTML = '';
     state.meteoriteStates.forEach(meteorite => {
         ctx.beginPath();
         ctx.arc(meteorite.meteoriteX, meteorite.meteoriteY, meteorite.meteoriteRadius, 0, 2 * Math.PI, false);
@@ -51,12 +53,23 @@ function drawState(state) {
         ctx.fillText(meteorite.meteoriteID, meteorite.meteoriteX, meteorite.meteoriteY);
         ctx.stroke();
         ctx.fillStyle = 'white';
+		meteors.innerHTML +=
+				`<li>id: ${meteorite.meteoriteID}, ` +				
+				`Pos: ${meteorite.meteoriteX};${meteorite.meteoriteY}` +
+				`</li>;`
     })
+	const rockets = document.getElementById('rockets');
+    rockets.innerHTML = '';
     state.rocketStates.forEach(rs => {
             ctx.font = '12px Arial';
             ctx.fillStyle = fillStyle(rs);
             ctx.textAlign = 'center';
             ctx.fillText(rs.rocketID, rs.rocketX, rs.rocketY - 15);
+			rockets.innerHTML +=
+				`<li>Owner: ${rs.owner}, ` +
+				`id: ${rs.rocketID}, ` +				
+				`Pos: ${rs.rocketX};${rs.rocketY}` +
+				`</li>;`
     })
     state.shipStates.forEach(ss => {
     

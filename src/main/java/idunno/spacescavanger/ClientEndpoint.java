@@ -54,7 +54,7 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 	}
 
 	private void initStrategy(String message) {
-		strategy = Optional.of(new Strategy.NoStrategy(converter.toObject(message, Game.class)));
+		strategy = Optional.of(new Strategy.DummayFeriDummyStrategy(converter.toObject(message, Game.class)));
 	}
 
 	public void sendMessage(String message) {
