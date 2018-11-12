@@ -43,5 +43,10 @@ public class Line {
 	public Point getEndPoint() {
 		return endPoint;
 	}
+	
+	@Override
+	public String toString() {
+	    return "Line [startPoint=" + startPoint + ", endpoint=" + endPoint + ", length=" + length + "]";
+	}
 
 }

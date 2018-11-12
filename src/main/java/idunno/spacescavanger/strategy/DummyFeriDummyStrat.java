@@ -20,8 +20,7 @@ public class DummyFeriDummyStrat extends Strategy {
 		super(game);
 	}
 
-	@Override
-	public GameResponse move(GameState gameStatus) {
+	public GameResponse doMove(GameState gameStatus) {
 		Map<String, Ship> shipsByOwner = gameStatus.getShipStates()
 				.stream()
 				.collect(Collectors.toMap(Ship::getOwner, identity()));
@@ -38,14 +37,12 @@ public class DummyFeriDummyStrat extends Strategy {
 	}
 
 	@Override
-	protected GameResponse suggestFirstMove(GameState currentState) {
-		// TODO Auto-generated method stub
-		return null;
+	protected GameResponse suggestFirstMove(GameState gameStatus) {
+        return doMove(gameStatus);
 	}
 
 	@Override
-	protected GameResponse suggestMove(GameState lastState, GameState currentState) {
-		// TODO Auto-generated method stub
-		return null;
+	protected GameResponse suggestMove(GameState lastState, GameState gameStatus) {
+	    return doMove(gameStatus);
 	}
 }

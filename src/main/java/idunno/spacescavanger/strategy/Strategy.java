@@ -9,14 +9,16 @@ import idunno.spacescavanger.dto.GameState;
 public abstract class Strategy {
 	protected final Game game;
 	private Optional<GameState> lastState;
+	private final RocketPathCalculator rocketPathCalculator = new RocketPathCalculator();
 
 	public Strategy(Game game) {
 		this.game = game;
 		lastState = Optional.empty();
 	}
 
-	public GameResponse move(GameState gameState) {
+	public final GameResponse move(GameState gameState) {
 		GameResponse response;
+		gameState.setRocketPaths(rocketPathCalculator.calculate(lastState, gameState, game.getRocketRange()));
 		if (lastState.isPresent())
 			response = suggestMove(lastState.get(), gameState);
 		else
@@ -31,7 +33,7 @@ public abstract class Strategy {
 	// irányba halad,
 	// az előző gamestateből viszont ki lehet számolni de nem tudm, hogy jó ötlet e.
 	protected abstract GameResponse suggestMove(GameState lastState, GameState currentState);
-
+	
 	private void setLastState(GameState gameState) {
 		lastState = Optional.of(gameState);
 	}

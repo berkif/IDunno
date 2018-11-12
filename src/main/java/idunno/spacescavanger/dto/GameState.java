@@ -2,9 +2,13 @@ package idunno.spacescavanger.dto;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import idunno.spacescavanger.coordgeom.Line;
 
 @JsonDeserialize(builder = GameState.Builder.class)
 public class GameState {
@@ -14,6 +18,8 @@ public class GameState {
 	private final List<Standings> standings;
 	private final GameStatus gameStatus;
 	private final int timeElapsed;
+	@JsonIgnore
+	private Map<Integer, Line> rocketPaths;
 
 	private GameState(Builder builder) {
 		this.meteoriteStates = builder.meteoriteStates;
@@ -47,6 +53,16 @@ public class GameState {
 
 	public int getTimeElapsed() {
 		return timeElapsed;
+	}
+	
+	@JsonIgnore
+	public Map<Integer, Line> getRocketPaths() {
+	    return rocketPaths;
+	}
+	
+	@JsonIgnore
+	public void setRocketPaths(Map<Integer, Line> rocketPaths) {
+	    this.rocketPaths = rocketPaths;
 	}
 
 	public static Builder builder() {

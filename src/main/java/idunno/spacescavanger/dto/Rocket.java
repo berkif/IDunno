@@ -29,6 +29,10 @@ public class Rocket {
 	public String getOwner() {
 		return owner;
 	}
+	
+	public boolean idEquals(Rocket other) {
+	    return this.getRocketID() == other.getRocketID();
+	}
 
 	@Override
 	public boolean equals(final Object other) {
