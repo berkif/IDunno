@@ -5,6 +5,12 @@ import static java.lang.Math.sqrt;
 
 import java.util.Objects;
 
+/**
+ * Do not modify!!!
+ * 
+ * @author Jocó
+ *
+ */
 public class Point {
 	private final double y, x;
 
