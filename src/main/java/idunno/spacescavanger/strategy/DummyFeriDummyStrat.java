@@ -13,11 +13,14 @@ import idunno.spacescavanger.dto.Game;
 import idunno.spacescavanger.dto.GameResponse;
 import idunno.spacescavanger.dto.GameState;
 import idunno.spacescavanger.dto.Meteorite;
+import idunno.spacescavanger.dto.Rocket;
 import idunno.spacescavanger.dto.Ship;
 
 public class DummyFeriDummyStrat extends Strategy {
 
-	public DummyFeriDummyStrat(Game game) {
+	private static final String OUR_NAME = "idunno";
+
+    public DummyFeriDummyStrat(Game game) {
 		super(game);
 	}
 
@@ -25,7 +28,7 @@ public class DummyFeriDummyStrat extends Strategy {
 		Map<String, Ship> shipsByOwner = gameStatus.getShipStates()
 				.stream()
 				.collect(Collectors.toMap(Ship::getOwner, identity()));
-		Point ourPos = shipsByOwner.get("idunno").getPosition();
+		Point ourPos = shipsByOwner.get(OUR_NAME).getPosition();
 		Point targetPos = new Point(100, 100);
 		double maxPoint = 0.0;
 		for (Meteorite meteor : gameStatus.getMeteoriteStates()) {
@@ -43,16 +46,16 @@ public class DummyFeriDummyStrat extends Strategy {
 		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
 				.getClosestMeteoritePos(gameStatus.getMeteoriteStates(), shipsByOwner.get("bot1").getPosition());
 		Optional<Point> targetRocket = getTarget(gameStatus, shipsByOwner, closestMeteoritePosToEnemy);
-		return GameResponse.builder().withShipMoveToPosition(targetPos).withRocketMoveToPosition(targetRocket).build();
+		return GameResponse.builder().withShipMoveToPosition(targetPos).withRocketMoveToPosition(targetRocket).withShieldIsActivated(shouldTurnOnShield(gameStatus)).build();
 	}
 
 	private Optional<Point> getTarget(GameState gameStatus, Map<String, Ship> shipsByOwner,
 			Optional<Point> closestMeteoritePosToEnemy) {
 		Optional<Point> target;
-		if (willHitTarget(shipsByOwner.get("idunno").getPosition(), shipsByOwner.get("bot1").getPosition(),
+		if (willHitTarget(shipsByOwner.get(OUR_NAME).getPosition(), shipsByOwner.get("bot1").getPosition(),
 				gameStatus)) {
 			target = Optional.of(shipsByOwner.get("bot1").getPosition());
-		} else if (willHitTarget(shipsByOwner.get("idunno").getPosition(), closestMeteoritePosToEnemy.orElse(null),
+		} else if (willHitTarget(shipsByOwner.get(OUR_NAME).getPosition(), closestMeteoritePosToEnemy.orElse(null),
 				gameStatus)) {
 			target = closestMeteoritePosToEnemy;
 		} else {
@@ -83,5 +86,17 @@ public class DummyFeriDummyStrat extends Strategy {
 			}
 		}
 		return true;
+	}
+	
+	private boolean shouldTurnOnShield(GameState gameStatus) {
+	    Point ourPosition = gameStatus.getShipStates().stream()
+	        .filter(ship -> OUR_NAME.equalsIgnoreCase(ship.getOwner()))
+	        .map(Ship::getPosition)
+	        .findAny()
+	        .get();
+	    return gameStatus.getRocketStates().stream()
+	        .filter(rocket -> !OUR_NAME.equalsIgnoreCase(rocket.getOwner()))
+	        .map(rocket -> new Circle(rocket.getPosition(), game.getRocketExplosionRadius()))
+	        .anyMatch(circle -> CommonMethods.inInside(ourPosition, circle));
 	}
 }

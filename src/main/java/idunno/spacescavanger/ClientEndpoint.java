@@ -42,6 +42,7 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 			strategy.ifPresentOrElse(s -> {
 				GameState status = converter.toObject(message, GameState.class);
 				GameStatus gameStatus = status.getGameStatus();
+				System.out.println(status.getTimeElapsed());
 				if (gameStatus == ABORTED || gameStatus == ENDED) {
 					System.out.println(gameStatus);
 					stop();
