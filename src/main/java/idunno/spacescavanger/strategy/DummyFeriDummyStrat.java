@@ -96,7 +96,16 @@ public class DummyFeriDummyStrat extends Strategy {
 	        .get();
 	    return gameStatus.getRocketStates().stream()
 	        .filter(rocket -> !OUR_NAME.equalsIgnoreCase(rocket.getOwner()))
+	        .filter(rocket -> isRocketAboutToExplode(gameStatus, rocket))
 	        .map(rocket -> new Circle(rocket.getPosition(), game.getRocketExplosionRadius()))
 	        .anyMatch(circle -> CommonMethods.inInside(ourPosition, circle));
+	}
+	
+	private boolean isRocketAboutToExplode(GameState gameStatus, Rocket rocket) {
+	    Line rocketPath = gameStatus.getRocketPaths().get(rocket.getRocketID());
+	    if (rocketPath == null) return false;
+	    double rocketMovementSpeedPerSec = game.getRocketMovementSpeed() * (1000.0 / (double) game.getInternalSchedule());
+	    double pathLeft = ((double) game.getShieldUsingSchedule() * (1000.0 / (double) game.getInternalSchedule())) * rocketMovementSpeedPerSec;
+	    return CommonMethods.distanceBetweenTwoPoint(rocketPath.getEndPoint(), rocket.getPosition()) <= pathLeft;
 	}
 }
