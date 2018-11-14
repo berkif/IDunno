@@ -30,6 +30,9 @@ public class Point {
 	public double distance(Point other) {
 		return sqrt(pow((x - other.x()), 2) + pow((y - other.y()), 2));
 	}
+	public Point substract(Point other) {
+	    return new Point(y - other.y, x - other.x());
+	}
 
 	@Override
 	public boolean equals(final Object other) {
