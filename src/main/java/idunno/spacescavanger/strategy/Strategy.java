@@ -2,9 +2,11 @@ package idunno.spacescavanger.strategy;
 
 import java.util.Optional;
 
+import idunno.spacescavanger.coordgeom.Point;
 import idunno.spacescavanger.dto.Game;
 import idunno.spacescavanger.dto.GameResponse;
 import idunno.spacescavanger.dto.GameState;
+import idunno.spacescavanger.dto.Ship;
 
 public abstract class Strategy {
 	protected final Game game;
@@ -36,6 +38,27 @@ public abstract class Strategy {
 	
 	private void setLastState(GameState gameState) {
 		lastState = Optional.of(gameState);
+	}
+	protected Point calculateVelocity(Ship lastShipState, Ship currentShipState) {
+        return currentShipState.getPosition().substract(lastShipState.getPosition());
+    }
+	// nincs használva de meghagytam
+    protected double calculateAngle(Point first, Point second) {
+        Point diff = second.substract(first);
+        return Math.atan(diff.y() / diff.x());
+    }
+
+	protected Optional<Point> getShootTargetPosition(int i, Point shooter, Point target, Point targetVelocity) {
+		if (i >= game.getRocketRange()) {
+			return Optional.empty();
+		}
+		Point enemyNextCoordinates = target.add(targetVelocity);
+		if (shooter.distance(enemyNextCoordinates) > (game.getRocketMovementSpeed() * i)) {
+			i++;
+			return getShootTargetPosition(i, shooter, enemyNextCoordinates, targetVelocity);
+		} else {
+			return Optional.of(enemyNextCoordinates);
+		}
 	}
 
 }

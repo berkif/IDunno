@@ -24,11 +24,11 @@ public class DummyFeriDummyStrat extends Strategy {
 		super(game);
 	}
 
-	public GameResponse doMove(GameState gameStatus) {
-		Point ourPos = gameStatus.getIdunnoShip().getPosition();
+	public GameResponse doMove(GameState currentState) {
+		Point ourPos = currentState.getIdunnoShip().getPosition();
 		Point targetPos = new Point(100, 100);
 		double maxPoint = 0.0;
-		for (Meteorite meteor : gameStatus.getMeteoriteStates()) {
+		for (Meteorite meteor : currentState.getMeteoriteStates()) {
 			double score = meteor.getMeteoriteRadius()
 					/ CommonMethods.distanceBetweenTwoPoint(ourPos, meteor.getPosition());
 			if (score > maxPoint) {
@@ -41,23 +41,26 @@ public class DummyFeriDummyStrat extends Strategy {
 //		Optional<Point> closestMeteoritePos = CommonMethods.getClosestMeteoritePos(highestPointsMeteorites,
 //				shipsByOwner.get("idunno").getPosition());
 		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
-				.getClosestMeteoritePos(gameStatus.getMeteoriteStates(), gameStatus.getEnemyShip().getPosition());
-		Optional<Point> targetRocket = getTarget(gameStatus, closestMeteoritePosToEnemy);
-		int score = gameStatus.getStandings().stream()
+				.getClosestMeteoritePos(currentState.getMeteoriteStates(), currentState.getEnemyShip().getPosition());
+//		Optional<Point> targetRocket = getTarget(currentState, closestMeteoritePosToEnemy);
+		int score = currentState.getStandings().stream()
 		    .filter(standing -> standing.getUserID().equals(OUR_NAME))
 		    .findAny()
 		    .get()
 		    .getScore();
 		return GameResponse.builder().withUpgraded(score >= game.getUpgradeScore())
-		        .withShipMoveToPosition(targetPos).withRocketMoveToPosition(targetRocket).withShieldIsActivated(shouldTurnOnShield(gameStatus)).build();
+		        .withShipMoveToPosition(targetPos)
+//		        .withRocketMoveToPosition(targetRocket)
+		        .withShieldIsActivated(shouldTurnOnShield(currentState)).build();
 	}
 
 	private Optional<Point> getTarget(GameState gameStatus,
-			Optional<Point> closestMeteoritePosToEnemy) {
+			Optional<Point> closestMeteoritePosToEnemy, Ship enemyShip) {
 		Optional<Point> target;
 		if (willHitTarget(gameStatus.getIdunnoShip().getPosition(), gameStatus.getEnemyShip().getPosition(),
 				gameStatus)) {
-			target = Optional.of(gameStatus.getEnemyShip().getPosition());
+			Point targetVelocity = calculateVelocity(enemyShip, gameStatus.getEnemyShip());
+			target = getShootTargetPosition(1, gameStatus.getIdunnoShip().getPosition(), gameStatus.getEnemyShip().getPosition(), targetVelocity);
 		} else if (willHitTarget(gameStatus.getIdunnoShip().getPosition(), closestMeteoritePosToEnemy.orElse(null),
 				gameStatus)) {
 			target = closestMeteoritePosToEnemy;
@@ -73,8 +76,32 @@ public class DummyFeriDummyStrat extends Strategy {
 	}
 
 	@Override
-	protected GameResponse suggestMove(GameState lastState, GameState gameStatus) {
-		return doMove(gameStatus);
+	protected GameResponse suggestMove(GameState lastState, GameState currentState) {
+		Point ourPos = currentState.getIdunnoShip().getPosition();
+		Point targetPos = new Point(100, 100);
+		double maxPoint = 0.0;
+		for (Meteorite meteor : currentState.getMeteoriteStates()) {
+			double score = meteor.getMeteoriteRadius()
+					/ CommonMethods.distanceBetweenTwoPoint(ourPos, meteor.getPosition());
+			if (score > maxPoint) {
+				targetPos = meteor.getPosition();
+				maxPoint = score;
+			}
+		}
+//		List<Meteorite> highestPointsMeteorites = CommonMethods
+//				.getHighestPointsMeteorites(gameStatus.getMeteoriteStates());
+//		Optional<Point> closestMeteoritePos = CommonMethods.getClosestMeteoritePos(highestPointsMeteorites,
+//				shipsByOwner.get("idunno").getPosition());
+		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
+				.getClosestMeteoritePos(currentState.getMeteoriteStates(), currentState.getEnemyShip().getPosition());
+		Optional<Point> targetRocket = getTarget(currentState, closestMeteoritePosToEnemy, lastState.getEnemyShip());
+		int score = currentState.getStandings().stream()
+		    .filter(standing -> standing.getUserID().equals(OUR_NAME))
+		    .findAny()
+		    .get()
+		    .getScore();
+		return GameResponse.builder().withUpgraded(score >= game.getUpgradeScore())
+		        .withShipMoveToPosition(targetPos).withRocketMoveToPosition(targetRocket).withShieldIsActivated(shouldTurnOnShield(currentState)).build();
 	}
 
 	private boolean willHitTarget(Point source, Point target, GameState state) {

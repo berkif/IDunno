@@ -79,7 +79,26 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 
 		@Override
 		public GameResponse suggestMove(GameState lastState, GameState currentState) {
-			return suggestFirstMove(currentState);
+			Ship idunnoShip = currentState.getIdunnoShip();
+			Optional<Point> min = currentState.getMeteoriteStates()
+					.stream()
+					.map(Meteorite::getPosition)
+					.min(compareByDistance(idunnoShip.getPosition()));
+			Optional<Point> target = Optional.empty();
+			Ship enemyShip = currentState.getEnemyShip();
+			if (enemyShip.getPosition().distance(idunnoShip.getPosition()) < game.getRocketRange() 
+					&& currentState.getMeteoriteStates().stream().allMatch(m -> m.getDistance() > game.getRocketExplosionRadius())
+					) {
+				System.out.println("calculating target position");
+//				target =calculateShootAngle(enemyShip, idunnoShip.getPosition(), calculateVelocity(lastState.getEnemyShip(), enemyShip));
+				Point targetVelocity = calculateVelocity(lastState.getEnemyShip(), enemyShip);
+				target = getShootTargetPosition(1, idunnoShip.getPosition(), enemyShip.getPosition(), targetVelocity);
+				System.out.println("target position: " + target);
+			}
+			return GameResponse.builder()
+					.withShipMoveToPosition(min.orElse(new Point(100, 100)))
+					.withRocketMoveToPosition(target)
+					.build();
 		}
 
 		@Override
@@ -90,7 +109,6 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 					.min(compareByDistance(currentState.getIdunnoShip().getPosition()));
 			return GameResponse.builder()
 					.withShipMoveToPosition(min.orElse(new Point(100, 100)))
-					.withRocketMoveToPosition(currentState.getEnemyShip().getPosition())
 					.build();
 		}
 
