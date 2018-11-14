@@ -75,8 +75,8 @@ public abstract class Strategy {
             System.out.println("We can't hit it");
             return Optional.empty();
         }
-         double time1 = (-b + sqrt(pow(b, 2) * 4*a*c))/2*a;
-         double time2 = (-b - sqrt(pow(b, 2) * 4*a*c))/2*a;
+         double time1 = (-b + sqrt(disc))/2*a;
+         double time2 = (-b - sqrt(disc))/2*a;
          double t = Math.min(time1, time2);
          double aimX=target.getPosition().x() + (targetVelocity.x()*t);
             double aimY=target.getPosition().y()+(targetVelocity.y()*t);
