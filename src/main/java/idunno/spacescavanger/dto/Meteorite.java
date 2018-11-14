@@ -11,6 +11,7 @@ public class Meteorite {
 	private final int meteoriteRadius;
 	private final int meteoriteID;
 	private final Point position;
+	private double distance;
 
 	private Meteorite(Builder builder) {
 		this.meteoriteRadius = builder.meteoriteRadius;
@@ -28,6 +29,14 @@ public class Meteorite {
 
 	public Point getPosition() {
 		return position;
+	}
+
+	public double getDistance() {
+		return distance;
+	}
+
+	void setDistance(double distance) {
+		this.distance = distance;
 	}
 
 	@Override
