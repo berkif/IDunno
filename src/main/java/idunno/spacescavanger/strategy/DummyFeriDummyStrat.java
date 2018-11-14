@@ -25,10 +25,7 @@ public class DummyFeriDummyStrat extends Strategy {
 	}
 
 	public GameResponse doMove(GameState gameStatus) {
-		Map<String, Ship> shipsByOwner = gameStatus.getShipStates()
-				.stream()
-				.collect(Collectors.toMap(Ship::getOwner, identity()));
-		Point ourPos = shipsByOwner.get(OUR_NAME).getPosition();
+		Point ourPos = gameStatus.getIdunnoShip().getPosition();
 		Point targetPos = new Point(100, 100);
 		double maxPoint = 0.0;
 		for (Meteorite meteor : gameStatus.getMeteoriteStates()) {
@@ -44,8 +41,8 @@ public class DummyFeriDummyStrat extends Strategy {
 //		Optional<Point> closestMeteoritePos = CommonMethods.getClosestMeteoritePos(highestPointsMeteorites,
 //				shipsByOwner.get("idunno").getPosition());
 		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
-				.getClosestMeteoritePos(gameStatus.getMeteoriteStates(), shipsByOwner.get("bot1").getPosition());
-		Optional<Point> targetRocket = getTarget(gameStatus, shipsByOwner, closestMeteoritePosToEnemy);
+				.getClosestMeteoritePos(gameStatus.getMeteoriteStates(), gameStatus.getEnemyShip().getPosition());
+		Optional<Point> targetRocket = getTarget(gameStatus, closestMeteoritePosToEnemy);
 		int score = gameStatus.getStandings().stream()
 		    .filter(standing -> standing.getUserID().equals(OUR_NAME))
 		    .findAny()
@@ -55,13 +52,13 @@ public class DummyFeriDummyStrat extends Strategy {
 		        .withShipMoveToPosition(targetPos).withRocketMoveToPosition(targetRocket).withShieldIsActivated(shouldTurnOnShield(gameStatus)).build();
 	}
 
-	private Optional<Point> getTarget(GameState gameStatus, Map<String, Ship> shipsByOwner,
+	private Optional<Point> getTarget(GameState gameStatus,
 			Optional<Point> closestMeteoritePosToEnemy) {
 		Optional<Point> target;
-		if (willHitTarget(shipsByOwner.get(OUR_NAME).getPosition(), shipsByOwner.get("bot1").getPosition(),
+		if (willHitTarget(gameStatus.getIdunnoShip().getPosition(), gameStatus.getEnemyShip().getPosition(),
 				gameStatus)) {
-			target = Optional.of(shipsByOwner.get("bot1").getPosition());
-		} else if (willHitTarget(shipsByOwner.get(OUR_NAME).getPosition(), closestMeteoritePosToEnemy.orElse(null),
+			target = Optional.of(gameStatus.getEnemyShip().getPosition());
+		} else if (willHitTarget(gameStatus.getIdunnoShip().getPosition(), closestMeteoritePosToEnemy.orElse(null),
 				gameStatus)) {
 			target = closestMeteoritePosToEnemy;
 		} else {
@@ -95,11 +92,7 @@ public class DummyFeriDummyStrat extends Strategy {
 	}
 	
 	private boolean shouldTurnOnShield(GameState gameStatus) {
-	    Point ourPosition = gameStatus.getShipStates().stream()
-	        .filter(ship -> OUR_NAME.equalsIgnoreCase(ship.getOwner()))
-	        .map(Ship::getPosition)
-	        .findAny()
-	        .get();
+	    Point ourPosition = gameStatus.getIdunnoShip().getPosition();
 	    return gameStatus.getRocketStates().stream()
 	        .filter(rocket -> !OUR_NAME.equalsIgnoreCase(rocket.getOwner()))
 	        .filter(rocket -> isRocketAboutToExplode(gameStatus, rocket, ourPosition))

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -14,7 +15,8 @@ import idunno.spacescavanger.coordgeom.Line;
 public class GameState {
 	private final List<Meteorite> meteoriteStates;
 	private final List<Rocket> rocketStates;
-	private final List<Ship> shipStates;
+	private final Ship enemyShip;
+	private final Ship idunnoShip;
 	private final List<Standings> standings;
 	private final GameStatus gameStatus;
 	private final int timeElapsed;
@@ -24,7 +26,8 @@ public class GameState {
 	private GameState(Builder builder) {
 		this.meteoriteStates = builder.meteoriteStates;
 		this.rocketStates = builder.rocketStates;
-		this.shipStates = builder.shipStates;
+		this.idunnoShip = builder.idunnoShip;
+		this.enemyShip = builder.enemyShip;
 		this.standings = builder.standings;
 		this.gameStatus = builder.gameStatus;
 		this.timeElapsed = builder.timeElapsed;
@@ -39,8 +42,12 @@ public class GameState {
 		return rocketStates;
 	}
 
-	public List<Ship> getShipStates() {
-		return shipStates;
+	public Ship getEnemyShip() {
+		return enemyShip;
+	}
+
+	public Ship getIdunnoShip() {
+		return idunnoShip;
 	}
 
 	public List<Standings> getStandings() {
@@ -68,6 +75,7 @@ public class GameState {
 	public static Builder builder() {
 		return new Builder();
 	}
+	
 	@Override
 	public boolean equals(final Object other) {
 		if (!(other instanceof GameState)) {
@@ -76,26 +84,31 @@ public class GameState {
 		GameState castOther = (GameState) other;
 		return Objects.equals(meteoriteStates, castOther.meteoriteStates)
 				&& Objects.equals(rocketStates, castOther.rocketStates)
-				&& Objects.equals(shipStates, castOther.shipStates) && Objects.equals(standings, castOther.standings)
-				&& Objects.equals(gameStatus, castOther.gameStatus)
-				&& Objects.equals(timeElapsed, castOther.timeElapsed);
+				&& Objects.equals(enemyShip, castOther.enemyShip) && Objects.equals(idunnoShip, castOther.idunnoShip)
+				&& Objects.equals(standings, castOther.standings) && Objects.equals(gameStatus, castOther.gameStatus)
+				&& Objects.equals(timeElapsed, castOther.timeElapsed)
+				&& Objects.equals(rocketPaths, castOther.rocketPaths);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(meteoriteStates, rocketStates, shipStates, standings, gameStatus, timeElapsed);
+		return Objects.hash(meteoriteStates, rocketStates, enemyShip, idunnoShip, standings, gameStatus, timeElapsed,
+			rocketPaths);
 	}
+
 	@Override
 	public String toString() {
-		return "GameState [meteoriteStates=" + meteoriteStates + ", rocketStates=" + rocketStates + ", shipStates="
-				+ shipStates + ", standings=" + standings + ", gameStatus=" + gameStatus + ", timeElapsed="
-				+ timeElapsed + "]";
+		return "GameState [meteoriteStates=" + meteoriteStates + ", rocketStates=" + rocketStates + ", enemyShip="
+				+ enemyShip + ", idunnoShip=" + idunnoShip + ", standings=" + standings + ", gameStatus=" + gameStatus
+				+ ", timeElapsed=" + timeElapsed + ", rocketPaths=" + rocketPaths + "]";
 	}
+
 
 	public static final class Builder {
 		private List<Meteorite> meteoriteStates = Collections.emptyList();
 		private List<Rocket> rocketStates = Collections.emptyList();
-		private List<Ship> shipStates = Collections.emptyList();
+		private Ship enemyShip;
+		private Ship idunnoShip;
 		private List<Standings> standings = Collections.emptyList();
 		private GameStatus gameStatus;
 		private int timeElapsed;
@@ -114,7 +127,11 @@ public class GameState {
 		}
 
 		public Builder withShipStates(List<Ship> shipStates) {
-			this.shipStates = shipStates;
+			// eddig is igy használtuk, akkor már legyen itt
+			// persze, lehet hogy nem lesz jó ha több csapat lesz YAGNI!
+			Map<Boolean, List<Ship>> ships = shipStates.stream().collect(Collectors.partitioningBy(s -> s.getOwner().equals("idunno")));
+			this.idunnoShip = ships.get(true).get(0);
+			this.enemyShip = ships.get(false).get(0);
 			return this;
 		}
 
