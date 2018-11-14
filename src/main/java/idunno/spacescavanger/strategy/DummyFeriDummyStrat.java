@@ -46,7 +46,13 @@ public class DummyFeriDummyStrat extends Strategy {
 		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
 				.getClosestMeteoritePos(gameStatus.getMeteoriteStates(), shipsByOwner.get("bot1").getPosition());
 		Optional<Point> targetRocket = getTarget(gameStatus, shipsByOwner, closestMeteoritePosToEnemy);
-		return GameResponse.builder().withShipMoveToPosition(targetPos).withRocketMoveToPosition(targetRocket).withShieldIsActivated(shouldTurnOnShield(gameStatus)).build();
+		int score = gameStatus.getStandings().stream()
+		    .filter(standing -> standing.getUserID().equals(OUR_NAME))
+		    .findAny()
+		    .get()
+		    .getScore();
+		return GameResponse.builder().withUpgraded(score >= game.getUpgradeScore())
+		        .withShipMoveToPosition(targetPos).withRocketMoveToPosition(targetRocket).withShieldIsActivated(shouldTurnOnShield(gameStatus)).build();
 	}
 
 	private Optional<Point> getTarget(GameState gameStatus, Map<String, Ship> shipsByOwner,
@@ -96,16 +102,20 @@ public class DummyFeriDummyStrat extends Strategy {
 	        .get();
 	    return gameStatus.getRocketStates().stream()
 	        .filter(rocket -> !OUR_NAME.equalsIgnoreCase(rocket.getOwner()))
-	        .filter(rocket -> isRocketAboutToExplode(gameStatus, rocket))
+	        .filter(rocket -> isRocketAboutToExplode(gameStatus, rocket, ourPosition))
 	        .map(rocket -> new Circle(rocket.getPosition(), game.getRocketExplosionRadius()))
-	        .anyMatch(circle -> CommonMethods.inInside(ourPosition, circle));
+	        .anyMatch(circle -> CommonMethods.isInside(ourPosition, circle, 2.));
 	}
 	
-	private boolean isRocketAboutToExplode(GameState gameStatus, Rocket rocket) {
+	private boolean isRocketAboutToExplode(GameState gameStatus, Rocket rocket, Point ourPosition) {
 	    Line rocketPath = gameStatus.getRocketPaths().get(rocket.getRocketID());
 	    if (rocketPath == null) return false;
-	    double rocketMovementSpeedPerSec = game.getRocketMovementSpeed() * (1000.0 / (double) game.getInternalSchedule());
-	    double pathLeft = ((double) game.getShieldUsingSchedule() * (1000.0 / (double) game.getInternalSchedule())) * rocketMovementSpeedPerSec;
-	    return CommonMethods.distanceBetweenTwoPoint(rocketPath.getEndPoint(), rocket.getPosition()) <= pathLeft;
+	    boolean aboutToReachEndOfPath = CommonMethods.distanceBetweenTwoPoint(rocketPath.getEndPoint(), rocket.getPosition()) <= 20.;
+	    boolean aboutToHitUs = CommonMethods.distanceBetweenTwoPoint(ourPosition, rocket.getPosition()) <= ((double) game.getRocketExplosionRadius() / 3.);
+	    boolean aboutToHitMeteorite = gameStatus.getMeteoriteStates().stream()
+	        .map(meteorite -> new Circle(meteorite.getPosition(), meteorite.getMeteoriteRadius()))
+	        .filter(circle -> CommonMethods.isIntersect(rocketPath, circle))
+	        .anyMatch(circle -> CommonMethods.distanceBetweenTwoPoint(rocket.getPosition(), circle.getCenter()) < circle.getRadius() + 2.);
+        return aboutToHitMeteorite || aboutToReachEndOfPath || aboutToHitUs;
 	}
 }

@@ -67,8 +67,12 @@ public class CommonMethods {
 		return Line2D.ptSegDist(x1, y1, x2, y2, point.x(), point.y());
 	}
 	
-	public static boolean inInside(Point point, Circle circle) {
-	    return distanceBetweenTwoPoint(point, circle.getCenter()) <= circle.getRadius();
+	public static boolean isInside(Point point, Circle circle) {
+	    return isInside(point, circle, 0.0);
+	}
+	
+	public static boolean isInside(Point point, Circle circle, double epsilon) {
+	    return distanceBetweenTwoPoint(point, circle.getCenter()) <= circle.getRadius() + epsilon;
 	}
 
 }
