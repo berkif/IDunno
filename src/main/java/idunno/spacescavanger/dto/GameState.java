@@ -1,9 +1,14 @@
 package idunno.spacescavanger.dto;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.partitioningBy;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -14,9 +19,10 @@ import idunno.spacescavanger.coordgeom.Line;
 public class GameState {
 	private final List<Meteorite> meteoriteStates;
 	private final List<Rocket> rocketStates;
-	private final List<Ship> shipStates;
+	private final Map<String, Ship> shipStates;
 	private final List<Standings> standings;
 	private final GameStatus gameStatus;
+	private final Ship idunnoShip;
 	private final int timeElapsed;
 	@JsonIgnore
 	private Map<Integer, Line> rocketPaths;
@@ -28,6 +34,7 @@ public class GameState {
 		this.standings = builder.standings;
 		this.gameStatus = builder.gameStatus;
 		this.timeElapsed = builder.timeElapsed;
+		this.idunnoShip = builder.idunnoShip;
 	}
 
 	public List<Meteorite> getMeteoriteStates() {
@@ -39,7 +46,7 @@ public class GameState {
 		return rocketStates;
 	}
 
-	public List<Ship> getShipStates() {
+	public Map<String, Ship> getShipStates() {
 		return shipStates;
 	}
 
@@ -63,6 +70,10 @@ public class GameState {
 	@JsonIgnore
 	public void setRocketPaths(Map<Integer, Line> rocketPaths) {
 	    this.rocketPaths = rocketPaths;
+	}
+
+	public Ship getIdunnoShip() {
+		return idunnoShip;
 	}
 
 	public static Builder builder() {
@@ -95,8 +106,9 @@ public class GameState {
 	public static final class Builder {
 		private List<Meteorite> meteoriteStates = Collections.emptyList();
 		private List<Rocket> rocketStates = Collections.emptyList();
-		private List<Ship> shipStates = Collections.emptyList();
+		private Map<String, Ship> shipStates = Collections.emptyMap();
 		private List<Standings> standings = Collections.emptyList();
+		private Ship idunnoShip;
 		private GameStatus gameStatus;
 		private int timeElapsed;
 
@@ -114,7 +126,12 @@ public class GameState {
 		}
 
 		public Builder withShipStates(List<Ship> shipStates) {
-			this.shipStates = shipStates;
+		    Map<String, Ship> shipsByOwner = shipStates
+	                .stream()
+	                .collect(Collectors.toMap(Ship::getOwner, identity()));
+		    idunnoShip = shipsByOwner.get("idunno");
+		    shipsByOwner.remove("idunno");
+			this.shipStates = shipsByOwner;
 			return this;
 		}
 

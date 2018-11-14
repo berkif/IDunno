@@ -84,16 +84,13 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 
 		@Override
 		protected GameResponse suggestFirstMove(GameState currentState) {
-			Map<String, Ship> shipsByOwner = currentState.getShipStates()
-					.stream()
-					.collect(Collectors.toMap(Ship::getOwner, identity()));
 			Optional<Point> min = currentState.getMeteoriteStates()
 					.stream()
 					.map(Meteorite::getPosition)
-					.min(compareByDistance(shipsByOwner.get("idunno").getPosition()));
+					.min(compareByDistance(currentState.getIdunnoShip().getPosition()));
 			return GameResponse.builder()
 					.withShipMoveToPosition(min.orElse(new Point(100, 100)))
-					.withRocketMoveToPosition(shipsByOwner.get("bot1").getPosition())
+					.withRocketMoveToPosition(currentState.getShipStates().get("bot1").getPosition())
 					.build();
 		}
 
