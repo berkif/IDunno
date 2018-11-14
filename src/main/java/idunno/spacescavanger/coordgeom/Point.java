@@ -14,9 +14,9 @@ import java.util.Objects;
 public class Point {
 	private final double y, x;
 
-	public Point(double y, double x) {
-		this.y = y;
+	public Point(double x, double y) {
 		this.x = x;
+		this.y = y;
 	}
 
 	public double y() {

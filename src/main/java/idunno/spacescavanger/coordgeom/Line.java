@@ -25,7 +25,7 @@ public class Line {
 				+ (innerPoint.x() - startPoint.x()) / distanceStartAndInner * (length - distanceStartAndInner);
 		double endY = innerPoint.y()
 				+ (innerPoint.y() - startPoint.y()) / distanceStartAndInner * (length - distanceStartAndInner);
-		return new Point(endY, endX);
+		return new Point(endX, endY);
 	}
 
 	public int getLength() {

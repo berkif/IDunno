@@ -15,7 +15,7 @@ public class Meteorite {
 	private Meteorite(Builder builder) {
 		this.meteoriteRadius = builder.meteoriteRadius;
 		this.meteoriteID = builder.meteoriteID;
-		this.position = new Point(builder.meteoriteY, builder.meteoriteX);
+		this.position = new Point(builder.meteoriteX, builder.meteoriteY);
 	}
 
 	public int getMeteoriteRadius() {

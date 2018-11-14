@@ -14,7 +14,7 @@ public class Rocket {
 
 	private Rocket(Builder builder) {
 		this.rocketID = builder.rocketID;
-		this.position = new Point(builder.rocketY, builder.rocketX);
+		this.position = new Point(builder.rocketX, builder.rocketY);
 		this.owner = builder.owner;
 	}
 

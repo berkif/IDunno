@@ -19,7 +19,7 @@ public class Ship {
 		this.shieldIsActivated = builder.shieldIsActivated;
 		this.upgraded = builder.upgraded;
 		this.owner = builder.owner;
-		this.position = new Point(builder.shipY, builder.shipX);
+		this.position = new Point(builder.shipX, builder.shipY);
 	}
 
 	public Point getPosition() {
