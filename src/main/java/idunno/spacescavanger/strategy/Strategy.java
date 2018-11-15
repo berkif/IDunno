@@ -1,7 +1,5 @@
 package idunno.spacescavanger.strategy;
 
-import static java.lang.Integer.MIN_VALUE;
-
 import java.util.Objects;
 import java.util.Optional;
 
@@ -17,8 +15,8 @@ public abstract class Strategy {
 	protected final Game game;
 	private Optional<GameState> lastState;
 	private final RocketPathCalculator rocketPathCalculator = new RocketPathCalculator();
-	private int lastRocketLunchedAt = MIN_VALUE;
-	private int lastShieldUsedAt = MIN_VALUE;
+	private int lastRocketLunchedAt = 0;
+	private int lastShieldUsedAt = 0;
 	public Strategy(Game game) {
 		this.game = game;
 		lastState = Optional.empty();
@@ -36,7 +34,7 @@ public abstract class Strategy {
 		setLastState(gameState);
 		if (!Objects.isNull(response.getRocketMoveToX())) {
 			lastRocketLunchedAt = gameState.getTimeElapsed();
-			System.out.println("shooted at " + lastRocketLunchedAt);
+//			System.out.println("shooted at " + lastRocketLunchedAt);
 		}
 		if (response.isShieldIsActivated()) {
 			lastShieldUsedAt = gameState.getTimeElapsed();
@@ -46,7 +44,7 @@ public abstract class Strategy {
 	}
 
 	boolean shieldOnCooldown(int timeElapsed) {
-		return lastShieldUsedAt > 0 && timeElapsed - lastShieldUsedAt / 1000 < game.getShieldRenewingSchedule();
+		return lastShieldUsedAt > 0 && (timeElapsed - lastShieldUsedAt) / 1000 < game.getShieldRenewingSchedule();
 	}
 	boolean rocketOnCooldown(int timeElapsed) {
 		return lastRocketLunchedAt > 0 && (timeElapsed - lastRocketLunchedAt) / 1000 < game.getRocketLoadingSchedule();

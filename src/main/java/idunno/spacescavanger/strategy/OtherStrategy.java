@@ -1,7 +1,6 @@
 package idunno.spacescavanger.strategy;
 
 import static idunno.spacescavanger.strategy.Comparators.compareByScore;
-import static idunno.spacescavanger.strategy.Comparators.compareByScoreWithEnemyDistance;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -44,9 +43,13 @@ public class OtherStrategy extends Strategy {
 		Optional<Point> moveToPosition = Optional.empty();
 		Ship enemyShip = currentState.getEnemyShip();
 		Ship idunnoShip = currentState.getIdunnoShip();
+		Point enemyPos = enemyShip.getPosition();
+		if (shieldOnCooldown(currentState.getTimeElapsed()) && weAreInDanger(currentState)) {
+			System.out.println("no shield and we will die");
+			
+		}
 		if (currentState.getMeteoriteStates().size() == 1
-				|| currentState.getMeteoriteStates().stream().filter(coserToUsPredicate(idunnoShip, enemyShip)).allMatch(m -> m.getMeteoriteRadius() == 20)) {
-		    Point enemyPos = enemyShip.getPosition();
+				|| currentState.getMeteoriteStates().stream().filter(coserToUsPredicate(idunnoShip, enemyShip)).allMatch(m -> m.getMeteoriteRadius() < 30)) {
 		    moveToPosition = Optional.of(new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() *2., enemyPos.y() - (double) game.getRocketExplosionRadius() *2.));
 		} else {
 				moveToPosition = currentState.getMeteoriteStates()
@@ -56,6 +59,15 @@ public class OtherStrategy extends Strategy {
 //			}
 		}
 		return moveToPosition;
+	}
+
+	private boolean weAreInDanger(GameState currentState) {
+		// az a baj, hogy a mozgásunk nincs belekalkulálva igy akkor is kiírja, ha elmozgunk majd igy is ugy is
+		Circle circle = new Circle(currentState.getIdunnoShip().getPosition(), game.getRocketExplosionRadius());
+		return currentState.getRocketStates().stream()
+			.filter(r -> !r.getOwner().equals(OUR_NAME))
+			.map(r -> currentState.getRocketPaths().get(r.getRocketID()))
+			.anyMatch(path -> CommonMethods.isIntersect(path, circle));
 	}
 
 	private Point fallBackMove() {
@@ -121,7 +133,7 @@ public class OtherStrategy extends Strategy {
 
 	private boolean shouldTurnOnShield(GameState currentState) {
 		 Point ourPosition = currentState.getIdunnoShip().getPosition();
-		    return currentState.getRocketStates().stream()
+		    return !shieldOnCooldown(currentState.getTimeElapsed()) && currentState.getRocketStates().stream()
 		        .filter(rocket -> !OUR_NAME.equalsIgnoreCase(rocket.getOwner()))
 		        .filter(rocket -> isRocketAboutToExplode(currentState, rocket, ourPosition))
 		        .map(rocket -> new Circle(rocket.getPosition(), game.getRocketExplosionRadius()))
