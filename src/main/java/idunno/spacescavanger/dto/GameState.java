@@ -1,5 +1,7 @@
 package idunno.spacescavanger.dto;
 
+import static idunno.spacescavanger.strategy.Strategy.OUR_NAME;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ public class GameState {
 	private final List<Standings> standings;
 	private final GameStatus gameStatus;
 	private final int timeElapsed;
+	private final int ourScore;
 	@JsonIgnore
 	private Map<Integer, Line> rocketPaths;
 
@@ -31,6 +34,8 @@ public class GameState {
 		this.standings = builder.standings;
 		this.gameStatus = builder.gameStatus;
 		this.timeElapsed = builder.timeElapsed;
+		this.ourScore = builder.ourScore;
+		
 	}
 
 	public List<Meteorite> getMeteoriteStates() {
@@ -62,6 +67,10 @@ public class GameState {
 		return timeElapsed;
 	}
 	
+	public int getOurScore() {
+		return ourScore;
+	}
+
 	@JsonIgnore
 	public Map<Integer, Line> getRocketPaths() {
 	    return rocketPaths;
@@ -112,6 +121,7 @@ public class GameState {
 		private List<Standings> standings = Collections.emptyList();
 		private GameStatus gameStatus;
 		private int timeElapsed;
+		private int ourScore;
 
 		private Builder() {
 		}
@@ -152,9 +162,15 @@ public class GameState {
 
 		public GameState build() {
 			meteoriteStates
-			.forEach(meteorite -> meteorite.setDistance(meteorite.getPosition().distance(idunnoShip.getPosition())));
-			rocketStates
-			.forEach(rocket -> rocket.setDistance(rocket.getPosition().distance(idunnoShip.getPosition())));
+			.forEach(meteorite -> 
+					meteorite.setDistance(meteorite.getPosition().distance(idunnoShip.getPosition())));
+			rocketStates.forEach(rocket -> 
+					rocket.setDistance(rocket.getPosition().distance(idunnoShip.getPosition())));
+			ourScore = standings.stream()
+				    .filter(standing -> standing.getUserID().equals(OUR_NAME))
+				    .findAny()
+				    .get()
+				    .getScore();
 			return new GameState(this);
 		}
 	}

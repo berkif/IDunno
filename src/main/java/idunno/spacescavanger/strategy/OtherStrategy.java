@@ -1,16 +1,20 @@
 package idunno.spacescavanger.strategy;
 
-import static java.util.Optional.empty;
+import static idunno.spacescavanger.strategy.Comparators.compareByScore;
 
 import java.util.Optional;
 
+import idunno.spacescavanger.coordgeom.Circle;
+import idunno.spacescavanger.coordgeom.Line;
 import idunno.spacescavanger.coordgeom.Point;
 import idunno.spacescavanger.dto.Game;
 import idunno.spacescavanger.dto.GameResponse;
 import idunno.spacescavanger.dto.GameState;
+import idunno.spacescavanger.dto.Meteorite;
+import idunno.spacescavanger.dto.Rocket;
+import idunno.spacescavanger.dto.Ship;
 
 public class OtherStrategy extends Strategy {
-
 	public OtherStrategy(Game game) {
 		super(game);
 	}
@@ -35,8 +39,10 @@ public class OtherStrategy extends Strategy {
 	}
 
 	private Optional<Point> getShipMoveToPosition(GameState currentState) {
-
-		return empty();
+		return currentState.getMeteoriteStates()
+				.stream()
+				.max(compareByScore()) // teljesen ugyan az mint a régiben, csak comparatorral
+				.map(Meteorite::getPosition);
 	}
 
 	private Point fallBackMove() {
@@ -44,15 +50,60 @@ public class OtherStrategy extends Strategy {
 	}
 
 	private Optional<Point> getRocketMoveToPosition(GameState lastState, GameState currentState) {
-
-		return empty();
+		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
+				.getClosestMeteoritePos(currentState.getMeteoriteStates(), currentState.getEnemyShip().getPosition());
+		return getTarget(currentState, closestMeteoritePosToEnemy, lastState.getEnemyShip());
 	}
-
+	private Optional<Point> getTarget(GameState gameStatus,
+			Optional<Point> closestMeteoritePosToEnemy, Ship enemyShip) {
+		Optional<Point> target;
+		if (willHitTarget(gameStatus.getIdunnoShip().getPosition(), gameStatus.getEnemyShip().getPosition(),
+				gameStatus)) {
+			Point targetVelocity = calculateVelocity(enemyShip, gameStatus.getEnemyShip());
+			target = getShootTargetPosition(1, gameStatus.getIdunnoShip().getPosition(), gameStatus.getEnemyShip().getPosition(), targetVelocity);
+		} else if (willHitTarget(gameStatus.getIdunnoShip().getPosition(), closestMeteoritePosToEnemy.orElse(null),
+				gameStatus)) {
+			target = closestMeteoritePosToEnemy;
+		} else {
+			target = Optional.empty();
+		}
+		return target;
+	}
+	private boolean willHitTarget(Point source, Point target, GameState state) {
+		if (source == null || target == null
+				|| CommonMethods.distanceBetweenTwoPoint(source, target) > game.getRocketRange()) {
+			return false;
+		}
+		Line path = new Line(source, target, game.getRocketRange());
+		for (Meteorite meteor : state.getMeteoriteStates()) {
+			if (CommonMethods.isIntersect(path, new Circle(meteor.getPosition(), meteor.getMeteoriteRadius()))) {
+				return false;
+			}
+		}
+		return true;
+	}
 	private boolean shouldUpgrade(GameState currentState) {
-		return false;
+		return currentState.getOurScore() >= game.getUpgradeScore();
 	}
 
 	private boolean shouldTurnOnShield(GameState currentState) {
-		return false;
+		 Point ourPosition = currentState.getIdunnoShip().getPosition();
+		    return currentState.getRocketStates().stream()
+		        .filter(rocket -> !OUR_NAME.equalsIgnoreCase(rocket.getOwner()))
+		        .filter(rocket -> isRocketAboutToExplode(currentState, rocket, ourPosition))
+		        .map(rocket -> new Circle(rocket.getPosition(), game.getRocketExplosionRadius()))
+		        .anyMatch(circle -> CommonMethods.isInside(ourPosition, circle, 2.));
+	}
+	
+	private boolean isRocketAboutToExplode(GameState gameStatus, Rocket rocket, Point ourPosition) {
+	    Line rocketPath = gameStatus.getRocketPaths().get(rocket.getRocketID());
+	    if (rocketPath == null) return false;
+	    boolean aboutToReachEndOfPath = CommonMethods.distanceBetweenTwoPoint(rocketPath.getEndPoint(), rocket.getPosition()) <= 20.;
+	    boolean aboutToHitUs = CommonMethods.distanceBetweenTwoPoint(ourPosition, rocket.getPosition()) <= ((double) game.getRocketExplosionRadius() / 3.);
+	    boolean aboutToHitMeteorite = gameStatus.getMeteoriteStates().stream()
+	        .map(meteorite -> new Circle(meteorite.getPosition(), meteorite.getMeteoriteRadius()))
+	        .filter(circle -> CommonMethods.isIntersect(rocketPath, circle))
+	        .anyMatch(circle -> CommonMethods.distanceBetweenTwoPoint(rocket.getPosition(), circle.getCenter()) < circle.getRadius() + 2.);
+        return aboutToHitMeteorite || aboutToReachEndOfPath || aboutToHitUs;
 	}
 }
