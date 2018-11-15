@@ -53,7 +53,7 @@ public abstract class Strategy {
 			return Optional.empty();
 		}
 		Point enemyNextCoordinates = target.add(targetVelocity);
-		if (shooter.distance(enemyNextCoordinates) > (game.getRocketMovementSpeed() * i)) {
+		if (shooter.distance(enemyNextCoordinates) - game.getRocketExplosionRadius() > (game.getRocketMovementSpeed() * i)) {
 			i++;
 			return getShootTargetPosition(i, shooter, enemyNextCoordinates, targetVelocity);
 		} else {

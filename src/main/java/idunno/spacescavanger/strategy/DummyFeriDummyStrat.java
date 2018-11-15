@@ -101,7 +101,10 @@ public class DummyFeriDummyStrat extends Strategy {
 		    .get()
 		    .getScore();
 		return GameResponse.builder().withUpgraded(score >= game.getUpgradeScore())
-		        .withShipMoveToPosition(targetPos).withRocketMoveToPosition(targetRocket).withShieldIsActivated(shouldTurnOnShield(currentState)).build();
+		        .withShipMoveToPosition(targetPos)
+		        .withRocketMoveToPosition(targetRocket)
+		        .withShieldIsActivated(shouldTurnOnShield(currentState))
+		        .build();
 	}
 
 	private boolean willHitTarget(Point source, Point target, GameState state) {
