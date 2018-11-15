@@ -39,10 +39,17 @@ public class OtherStrategy extends Strategy {
 	}
 
 	private Optional<Point> getShipMoveToPosition(GameState currentState) {
-		return currentState.getMeteoriteStates()
-				.stream()
-				.max(compareByScore()) // teljesen ugyan az mint a régiben, csak comparatorral
-				.map(Meteorite::getPosition);
+		Optional<Point> moveToPosition;
+		if (currentState.getMeteoriteStates().size() == 1) {
+		    Point enemyPos = currentState.getEnemyShip().getPosition();
+		    moveToPosition = Optional.of(new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() + 5., enemyPos.y() - (double) game.getRocketExplosionRadius() + 5.));
+		} else {
+			moveToPosition = currentState.getMeteoriteStates()
+					.stream()
+					.max(compareByScore()) // teljesen ugyan az mint a régiben, csak comparatorral
+					.map(Meteorite::getPosition);
+		}
+		return moveToPosition;
 	}
 
 	private Point fallBackMove() {
@@ -83,7 +90,7 @@ public class OtherStrategy extends Strategy {
 		return true;
 	}
 	private boolean shouldUpgrade(GameState currentState) {
-		return currentState.getOurScore() >= game.getUpgradeScore();
+		return currentState.getOurScore() >= game.getUpgradeScore() && currentState.getMeteoriteStates().size() >= 3;
 	}
 
 	private boolean shouldTurnOnShield(GameState currentState) {
