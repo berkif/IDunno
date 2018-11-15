@@ -1,10 +1,6 @@
 package idunno.spacescavanger.strategy;
 
-import static java.util.function.Function.identity;
-
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import idunno.spacescavanger.coordgeom.Circle;
 import idunno.spacescavanger.coordgeom.Line;
@@ -108,13 +104,16 @@ public class DummyFeriDummyStrat extends Strategy {
 	}
 
 	private boolean willHitTarget(Point source, Point target, GameState state) {
-		if (source == null || target == null
-				|| CommonMethods.distanceBetweenTwoPoint(source, target) > game.getRocketRange()) {
+		int rocketRange = game.getRocketRange();
+		double distance = CommonMethods.distanceBetweenTwoPoint(source, target);
+		if (source == null || target == null || distance > rocketRange) {
 			return false;
 		}
-		Line path = new Line(source, target, game.getRocketRange());
+		Line path = new Line(source, target, rocketRange);
 		for (Meteorite meteor : state.getMeteoriteStates()) {
-			if (CommonMethods.isIntersect(path, new Circle(meteor.getPosition(), meteor.getMeteoriteRadius()))) {
+			Point position = meteor.getPosition();
+			if (!position.equals(target)
+					&& CommonMethods.isIntersect(path, new Circle(position, meteor.getMeteoriteRadius()))) {
 				return false;
 			}
 		}
@@ -134,7 +133,7 @@ public class DummyFeriDummyStrat extends Strategy {
 	    Line rocketPath = gameStatus.getRocketPaths().get(rocket.getRocketID());
 	    if (rocketPath == null) return false;
 	    boolean aboutToReachEndOfPath = CommonMethods.distanceBetweenTwoPoint(rocketPath.getEndPoint(), rocket.getPosition()) <= 20.;
-	    boolean aboutToHitUs = CommonMethods.distanceBetweenTwoPoint(ourPosition, rocket.getPosition()) <= ((double) game.getRocketExplosionRadius() / 3.);
+	    boolean aboutToHitUs = CommonMethods.distanceBetweenTwoPoint(ourPosition, rocket.getPosition()) <= (game.getRocketExplosionRadius() / 3.);
 	    boolean aboutToHitMeteorite = gameStatus.getMeteoriteStates().stream()
 	        .map(meteorite -> new Circle(meteorite.getPosition(), meteorite.getMeteoriteRadius()))
 	        .filter(circle -> CommonMethods.isIntersect(rocketPath, circle))
