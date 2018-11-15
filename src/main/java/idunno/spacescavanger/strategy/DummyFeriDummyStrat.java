@@ -41,7 +41,7 @@ public class DummyFeriDummyStrat extends Strategy {
 //		Optional<Point> closestMeteoritePos = CommonMethods.getClosestMeteoritePos(highestPointsMeteorites,
 //				shipsByOwner.get("idunno").getPosition());
 		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
-				.getClosestMeteoritePos(currentState.getMeteoriteStates(), currentState.getEnemyShip().getPosition());
+				.getClosestMeteoritePosToEnemy(currentState.getMeteoriteStates(), currentState.getEnemyShip().getPosition());
 //		Optional<Point> targetRocket = getTarget(currentState, closestMeteoritePosToEnemy);
 		int score = currentState.getStandings().stream()
 		    .filter(standing -> standing.getUserID().equals(OUR_NAME))
@@ -93,7 +93,7 @@ public class DummyFeriDummyStrat extends Strategy {
 //		Optional<Point> closestMeteoritePos = CommonMethods.getClosestMeteoritePos(highestPointsMeteorites,
 //				shipsByOwner.get("idunno").getPosition());
 		Optional<Point> closestMeteoritePosToEnemy = CommonMethods
-				.getClosestMeteoritePos(currentState.getMeteoriteStates(), currentState.getEnemyShip().getPosition());
+				.getClosestMeteoritePosToEnemy(currentState.getMeteoriteStates(), currentState.getEnemyShip().getPosition());
 		Optional<Point> targetRocket = getTarget(currentState, closestMeteoritePosToEnemy, lastState.getEnemyShip());
 		int score = currentState.getStandings().stream()
 		    .filter(standing -> standing.getUserID().equals(OUR_NAME))

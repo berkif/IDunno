@@ -13,6 +13,7 @@ public class Ship {
 	private final boolean shieldIsActivated;
 	private final boolean upgraded;
 	private final String owner;
+	private double speed;
 
 	private Ship(Builder builder) {
 		this.shipID = builder.shipID;
@@ -41,7 +42,13 @@ public class Ship {
 	public String getOwner() {
 		return owner;
 	}
-
+	
+	public double getSpeed() {
+		return speed;
+	}
+	public void calculateSpeed(double shipMovementSpeed, double movementSpeedMultiplier) {
+		this.speed = isUpgraded() ? shipMovementSpeed * movementSpeedMultiplier : shipMovementSpeed;
+	}
 	@Override
 	public boolean equals(final Object other) {
 		if (!(other instanceof Ship)) {

@@ -40,6 +40,8 @@ function drawState(state) {
             `Score: ${standing.score}` +
             `</li>;`
     });
+    const time = document.getElementById('time');
+    time.innerHTML = 'time: ' + state.timeElapsed;
 	const meteors = document.getElementById('meteorites');
     meteors.innerHTML = '';
     state.meteoriteStates.forEach(meteorite => {

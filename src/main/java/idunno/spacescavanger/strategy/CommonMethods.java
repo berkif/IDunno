@@ -1,6 +1,6 @@
 package idunno.spacescavanger.strategy;
 
-import static idunno.spacescavanger.strategy.Comparators.compareByDistance;
+import static idunno.spacescavanger.strategy.Comparators.compareByDistanceFromEnemy;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
@@ -31,8 +31,9 @@ public class CommonMethods {
 		return result;
 	}
 
-	public static Optional<Point> getClosestMeteoritePos(List<Meteorite> meteoriteStates, Point position) {
-		return meteoriteStates.stream().map(Meteorite::getPosition).min(compareByDistance(position));
+	public static Optional<Meteorite> getClosestMeteoritePosToEnemy(List<Meteorite> meteoriteStates, Point position) {
+		return meteoriteStates.stream()
+				.min(compareByDistanceFromEnemy());
 	}
 
 	public static double distanceBetweenTwoPoint(Point a, Point b) {

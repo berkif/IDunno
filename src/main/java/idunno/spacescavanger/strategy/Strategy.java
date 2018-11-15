@@ -1,11 +1,15 @@
 package idunno.spacescavanger.strategy;
 
+import static java.lang.Integer.MIN_VALUE;
+
+import java.util.Objects;
 import java.util.Optional;
 
 import idunno.spacescavanger.coordgeom.Point;
 import idunno.spacescavanger.dto.Game;
 import idunno.spacescavanger.dto.GameResponse;
 import idunno.spacescavanger.dto.GameState;
+import idunno.spacescavanger.dto.Meteorite;
 import idunno.spacescavanger.dto.Ship;
 
 public abstract class Strategy {
@@ -13,7 +17,8 @@ public abstract class Strategy {
 	protected final Game game;
 	private Optional<GameState> lastState;
 	private final RocketPathCalculator rocketPathCalculator = new RocketPathCalculator();
-
+	private int lastRocketLunchedAt = MIN_VALUE;
+	private int lastShieldUsedAt = MIN_VALUE;
 	public Strategy(Game game) {
 		this.game = game;
 		lastState = Optional.empty();
@@ -22,14 +27,30 @@ public abstract class Strategy {
 	public final GameResponse move(GameState gameState) {
 		GameResponse response;
 		gameState.setRocketPaths(rocketPathCalculator.calculate(lastState, gameState, game.getRocketRange()));
+		gameState.getIdunnoShip().calculateSpeed(game.getShipMovementSpeed(), game.getMovementSpeedMultiplier());
+		gameState.getEnemyShip().calculateSpeed(game.getShipMovementSpeed(), game.getMovementSpeedMultiplier());
 		if (lastState.isPresent())
 			response = suggestMove(lastState.get(), gameState);
 		else
 			response = suggestFirstMove(gameState);
 		setLastState(gameState);
+		if (!Objects.isNull(response.getRocketMoveToX())) {
+			lastRocketLunchedAt = gameState.getTimeElapsed();
+			System.out.println("shooted at " + lastRocketLunchedAt);
+		}
+		if (response.isShieldIsActivated()) {
+			lastShieldUsedAt = gameState.getTimeElapsed();
+			System.out.println("shield used at " + lastRocketLunchedAt);
+		}
 		return response;
 	}
 
+	boolean shieldOnCooldown(int timeElapsed) {
+		return lastShieldUsedAt > 0 && timeElapsed - lastShieldUsedAt / 1000 < game.getShieldRenewingSchedule();
+	}
+	boolean rocketOnCooldown(int timeElapsed) {
+		return lastRocketLunchedAt > 0 && (timeElapsed - lastRocketLunchedAt) / 1000 < game.getRocketLoadingSchedule();
+	}
 	protected abstract GameResponse suggestFirstMove(GameState currentState);
 
 	// nem tudom, hogy használható lesz e. Nincs semmi infó arról, hogy mi milyen
@@ -49,14 +70,14 @@ public abstract class Strategy {
         return Math.atan(diff.y() / diff.x());
     }
 
-	protected Optional<Point> getShootTargetPosition(int i, Point shooter, Point target, Point targetVelocity) {
-		if (i >= game.getRocketRange()) {
+	protected Optional<Point> getShootTargetPosition(int i, Point shooter, Point target, Point targetVelocity, Optional<Meteorite> closestMeteoriteToTarget) {
+		Point enemyNextCoordinates = target.add(targetVelocity);
+		if (i >= game.getRocketRange() || (closestMeteoriteToTarget.isPresent() && closestMeteoriteToTarget.get().getPosition().distance(enemyNextCoordinates) < closestMeteoriteToTarget.get().getMeteoriteRadius())) {
 			return Optional.empty();
 		}
-		Point enemyNextCoordinates = target.add(targetVelocity);
 		if (shooter.distance(enemyNextCoordinates) - game.getRocketExplosionRadius() > (game.getRocketMovementSpeed() * i)) {
 			i++;
-			return getShootTargetPosition(i, shooter, enemyNextCoordinates, targetVelocity);
+			return getShootTargetPosition(i, shooter, enemyNextCoordinates, targetVelocity, closestMeteoriteToTarget);
 		} else {
 			return Optional.of(enemyNextCoordinates);
 		}

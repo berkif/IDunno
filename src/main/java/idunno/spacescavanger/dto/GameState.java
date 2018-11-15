@@ -163,7 +163,8 @@ public class GameState {
 		public GameState build() {
 			meteoriteStates
 			.forEach(meteorite -> 
-					meteorite.setDistance(meteorite.getPosition().distance(idunnoShip.getPosition())));
+					meteorite.setDistanceFromUs(meteorite.getPosition().distance(idunnoShip.getPosition()))
+						.setDistanceFromEnemy(meteorite.getPosition().distance(enemyShip.getPosition())));
 			rocketStates.forEach(rocket -> 
 					rocket.setDistance(rocket.getPosition().distance(idunnoShip.getPosition())));
 			ourScore = standings.stream()

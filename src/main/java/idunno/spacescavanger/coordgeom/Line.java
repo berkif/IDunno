@@ -18,6 +18,12 @@ public class Line {
 		this.length = length;
 		this.endPoint = calculateEndPoint();
 	}
+	public Line(Point startPoint, Point innerPoint) {
+		this.startPoint = startPoint;
+		this.innerPoint = innerPoint;
+		this.length =(int) startPoint.distance(innerPoint);
+		this.endPoint = innerPoint;
+	}
 
 	private Point calculateEndPoint() {
 		double distanceStartAndInner = CommonMethods.distanceBetweenTwoPoint(startPoint, innerPoint);
@@ -27,7 +33,7 @@ public class Line {
 				+ (innerPoint.y() - startPoint.y()) / distanceStartAndInner * (length - distanceStartAndInner);
 		return new Point(endX, endY);
 	}
-
+	
 	public int getLength() {
 		return length;
 	}

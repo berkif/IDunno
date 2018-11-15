@@ -23,6 +23,7 @@ import idunno.spacescavanger.dto.GameStatus;
 import idunno.spacescavanger.dto.Meteorite;
 import idunno.spacescavanger.dto.Ship;
 import idunno.spacescavanger.strategy.DummyFeriDummyStrat;
+import idunno.spacescavanger.strategy.OtherStrategy;
 import idunno.spacescavanger.strategy.Strategy;
 
 public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<String> {
@@ -41,8 +42,8 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 		try {
 			strategy.ifPresentOrElse(s -> {
 				GameState status = converter.toObject(message, GameState.class);
-				GameStatus gameStatus = status.getGameStatus();
 				System.out.println(status.getTimeElapsed());
+				GameStatus gameStatus = status.getGameStatus();
 				if (gameStatus == ABORTED || gameStatus == ENDED) {
 					System.out.println(gameStatus);
 					stop();
@@ -63,55 +64,13 @@ public class ClientEndpoint extends Endpoint implements MessageHandler.Whole<Str
 	}
 
 	private void initStrategy(String message) {
-		strategy = Optional.of(new DummyFeriDummyStrat(converter.toObject(message, Game.class)));
+		System.out.println("init strategy");
+		strategy = Optional.of(new OtherStrategy(converter.toObject(message, Game.class)));
 	}
 
 	public void sendMessage(String message) {
 		session.getAsyncRemote().sendText(message);
 	}
 
-	// TODO delete this.
-	public static class NoStrategy extends Strategy {
-
-		public NoStrategy(Game game) {
-			super(game);
-		}
-
-		@Override
-		public GameResponse suggestMove(GameState lastState, GameState currentState) {
-			Ship idunnoShip = currentState.getIdunnoShip();
-			Optional<Point> min = currentState.getMeteoriteStates()
-					.stream()
-					.map(Meteorite::getPosition)
-					.min(compareByDistance(idunnoShip.getPosition()));
-			Optional<Point> target = Optional.empty();
-			Ship enemyShip = currentState.getEnemyShip();
-			if (enemyShip.getPosition().distance(idunnoShip.getPosition()) < game.getRocketRange() 
-					&& currentState.getMeteoriteStates().stream().allMatch(m -> m.getDistance() > game.getRocketExplosionRadius())
-					) {
-				System.out.println("calculating target position");
-//				target =calculateShootAngle(enemyShip, idunnoShip.getPosition(), calculateVelocity(lastState.getEnemyShip(), enemyShip));
-				Point targetVelocity = calculateVelocity(lastState.getEnemyShip(), enemyShip);
-				target = getShootTargetPosition(1, idunnoShip.getPosition(), enemyShip.getPosition(), targetVelocity);
-				System.out.println("target position: " + target);
-			}
-			return GameResponse.builder()
-					.withShipMoveToPosition(min.orElse(new Point(100, 100)))
-					.withRocketMoveToPosition(target)
-					.build();
-		}
-
-		@Override
-		protected GameResponse suggestFirstMove(GameState currentState) {
-			Optional<Point> min = currentState.getMeteoriteStates()
-					.stream()
-					.map(Meteorite::getPosition)
-					.min(compareByDistance(currentState.getIdunnoShip().getPosition()));
-			return GameResponse.builder()
-					.withShipMoveToPosition(min.orElse(new Point(100, 100)))
-					.build();
-		}
-
-	}
 
 }

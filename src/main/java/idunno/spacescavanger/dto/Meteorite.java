@@ -11,7 +11,8 @@ public class Meteorite {
 	private final int meteoriteRadius;
 	private final int meteoriteID;
 	private final Point position;
-	private double distance;
+	private double distanceFromUs;
+	private double distanceFromEnemy;
 
 	private Meteorite(Builder builder) {
 		this.meteoriteRadius = builder.meteoriteRadius;
@@ -31,12 +32,22 @@ public class Meteorite {
 		return position;
 	}
 
-	public double getDistance() {
-		return distance;
+	public double getDistanceFromUs() {
+		return distanceFromUs;
 	}
 
-	void setDistance(double distance) {
-		this.distance = distance;
+	Meteorite setDistanceFromUs(double distance) {
+		this.distanceFromUs = distance;
+		return this;
+	}
+
+	public double getDistanceFromEnemy() {
+		return distanceFromEnemy;
+	}
+
+	Meteorite setDistanceFromEnemy(double distanceFromEnemy) {
+		this.distanceFromEnemy = distanceFromEnemy;
+		return this;
 	}
 
 	@Override
