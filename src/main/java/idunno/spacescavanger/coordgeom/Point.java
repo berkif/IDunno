@@ -14,9 +14,9 @@ import java.util.Objects;
 public class Point {
 	private final double y, x;
 
-	public Point(double y, double x) {
-		this.y = y;
+	public Point(double x, double y) {
 		this.x = x;
+		this.y = y;
 	}
 
 	public double y() {
@@ -30,7 +30,12 @@ public class Point {
 	public double distance(Point other) {
 		return sqrt(pow((x - other.x()), 2) + pow((y - other.y()), 2));
 	}
-
+	public Point substract(Point other) {
+        return new Point(x - other.x, y - other.y());
+    }
+    public Point add(Point other) {
+        return new Point(x + other.x, y + other.y());
+    }
 	@Override
 	public boolean equals(final Object other) {
 		if (!(other instanceof Point)) {

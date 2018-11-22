@@ -1,5 +1,11 @@
 package idunno.spacescavanger.dto;
 
+import static idunno.spacescavanger.strategy.Strategy.BOT_NAME;
+import static idunno.spacescavanger.strategy.Strategy.OUR_NAME;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -14,20 +20,25 @@ import idunno.spacescavanger.coordgeom.Line;
 public class GameState {
 	private final List<Meteorite> meteoriteStates;
 	private final List<Rocket> rocketStates;
-	private final List<Ship> shipStates;
+	private final Map<String, Ship> enemyShips;
+	private final Ship idunnoShip;
 	private final List<Standings> standings;
 	private final GameStatus gameStatus;
 	private final int timeElapsed;
+	private final int ourScore;
 	@JsonIgnore
 	private Map<Integer, Line> rocketPaths;
 
 	private GameState(Builder builder) {
 		this.meteoriteStates = builder.meteoriteStates;
 		this.rocketStates = builder.rocketStates;
-		this.shipStates = builder.shipStates;
+		this.idunnoShip = builder.idunnoShip;
+		this.enemyShips = builder.enemyShips;
 		this.standings = builder.standings;
 		this.gameStatus = builder.gameStatus;
 		this.timeElapsed = builder.timeElapsed;
+		this.ourScore = builder.ourScore;
+		
 	}
 
 	public List<Meteorite> getMeteoriteStates() {
@@ -39,8 +50,20 @@ public class GameState {
 		return rocketStates;
 	}
 
-	public List<Ship> getShipStates() {
-		return shipStates;
+	public Collection<Ship> getEnemyShips() {
+		return enemyShips.values();
+	}
+
+	public Ship getAnyEnemy() {
+		return this.getEnemyShips().stream().findAny().get();
+	}
+
+	public Ship getEnemy(String name) {
+		return enemyShips.get(name);
+	}
+
+	public Ship getIdunnoShip() {
+		return idunnoShip;
 	}
 
 	public List<Standings> getStandings() {
@@ -55,6 +78,10 @@ public class GameState {
 		return timeElapsed;
 	}
 	
+	public int getOurScore() {
+		return ourScore;
+	}
+
 	@JsonIgnore
 	public Map<Integer, Line> getRocketPaths() {
 	    return rocketPaths;
@@ -68,6 +95,7 @@ public class GameState {
 	public static Builder builder() {
 		return new Builder();
 	}
+	
 	@Override
 	public boolean equals(final Object other) {
 		if (!(other instanceof GameState)) {
@@ -76,29 +104,35 @@ public class GameState {
 		GameState castOther = (GameState) other;
 		return Objects.equals(meteoriteStates, castOther.meteoriteStates)
 				&& Objects.equals(rocketStates, castOther.rocketStates)
-				&& Objects.equals(shipStates, castOther.shipStates) && Objects.equals(standings, castOther.standings)
-				&& Objects.equals(gameStatus, castOther.gameStatus)
-				&& Objects.equals(timeElapsed, castOther.timeElapsed);
+				&& Objects.equals(enemyShips, castOther.enemyShips) && Objects.equals(idunnoShip, castOther.idunnoShip)
+				&& Objects.equals(standings, castOther.standings) && Objects.equals(gameStatus, castOther.gameStatus)
+				&& Objects.equals(timeElapsed, castOther.timeElapsed)
+				&& Objects.equals(rocketPaths, castOther.rocketPaths);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(meteoriteStates, rocketStates, shipStates, standings, gameStatus, timeElapsed);
+		return Objects.hash(meteoriteStates, rocketStates, enemyShips, idunnoShip, standings, gameStatus, timeElapsed,
+			rocketPaths);
 	}
+
 	@Override
 	public String toString() {
-		return "GameState [meteoriteStates=" + meteoriteStates + ", rocketStates=" + rocketStates + ", shipStates="
-				+ shipStates + ", standings=" + standings + ", gameStatus=" + gameStatus + ", timeElapsed="
-				+ timeElapsed + "]";
+		return "GameState [meteoriteStates=" + meteoriteStates + ", rocketStates=" + rocketStates + ", enemyShip="
+				+ enemyShips + ", idunnoShip=" + idunnoShip + ", standings=" + standings + ", gameStatus=" + gameStatus
+				+ ", timeElapsed=" + timeElapsed + ", rocketPaths=" + rocketPaths + "]";
 	}
+
 
 	public static final class Builder {
 		private List<Meteorite> meteoriteStates = Collections.emptyList();
 		private List<Rocket> rocketStates = Collections.emptyList();
-		private List<Ship> shipStates = Collections.emptyList();
+		private Map<String, Ship> enemyShips = Collections.emptyMap();
+		private Ship idunnoShip;
 		private List<Standings> standings = Collections.emptyList();
 		private GameStatus gameStatus;
 		private int timeElapsed;
+		private int ourScore;
 
 		private Builder() {
 		}
@@ -114,7 +148,10 @@ public class GameState {
 		}
 
 		public Builder withShipStates(List<Ship> shipStates) {
-			this.shipStates = shipStates;
+			Map<String, Ship> ships = shipStates.stream().collect(toMap(Ship::getOwner, identity()));
+			this.idunnoShip = ships.get(OUR_NAME);
+			ships.remove(OUR_NAME);
+			this.enemyShips = ships;
 			return this;
 		}
 
@@ -134,6 +171,17 @@ public class GameState {
 		}
 
 		public GameState build() {
+			meteoriteStates
+			.forEach(meteorite -> 
+					meteorite.setDistanceFromUs(meteorite.getPosition().distance(idunnoShip.getPosition()))
+						.setDistanceFromEnemy(BOT_NAME, meteorite.getPosition().distance(enemyShips.get(BOT_NAME).getPosition())));
+			rocketStates.forEach(rocket -> 
+					rocket.setDistance(rocket.getPosition().distance(idunnoShip.getPosition())));
+			ourScore = standings.stream()
+				    .filter(standing -> standing.getUserID().equals(OUR_NAME))
+				    .findAny()
+				    .get()
+				    .getScore();
 			return new GameState(this);
 		}
 	}

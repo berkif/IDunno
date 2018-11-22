@@ -1,10 +1,16 @@
 package idunno.spacescavanger.dto;
 
+import static java.util.function.Function.identity;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import idunno.spacescavanger.coordgeom.Point;
 
 @JsonDeserialize(builder = Game.Builder.class)
 public class Game {
@@ -32,7 +38,7 @@ public class Game {
 
 	private final List<Meteorite> meteorites;
 	private final List<Player> players;
-	private final List<Ship> spaceships;
+	private final Map<String, Ship> startingPositions;
 
 	private Game(Builder builder) {
 		this.timeElapsed = builder.timeElapsed;
@@ -55,7 +61,7 @@ public class Game {
 		this.movementSpeedMultiplier = builder.movementSpeedMultiplier;
 		this.meteorites = builder.meteorites;
 		this.players = builder.players;
-		this.spaceships = builder.spaceships;
+		this.startingPositions = builder.startingPositions;
 	}
 
 	public long getTimeElapsed() {
@@ -138,8 +144,8 @@ public class Game {
 		return players;
 	}
 
-	public List<Ship> getSpaceships() {
-		return spaceships;
+	public Point getStartingPosition(String teamName) {
+		return startingPositions.get(teamName).getPosition();
 	}
 
 	@Override
@@ -165,7 +171,7 @@ public class Game {
 				&& Objects.equals(upgradeScore, castOther.upgradeScore)
 				&& Objects.equals(movementSpeedMultiplier, castOther.movementSpeedMultiplier)
 				&& Objects.equals(meteorites, castOther.meteorites) && Objects.equals(players, castOther.players)
-				&& Objects.equals(spaceships, castOther.spaceships);
+				&& Objects.equals(startingPositions, castOther.startingPositions);
 	}
 
 	@Override
@@ -173,7 +179,7 @@ public class Game {
 		return Objects.hash(timeElapsed, gameLength, mapSizeX, mapSizeY, commandSchedule, internalSchedule,
 				broadcastSchedule, rocketMovementSpeed, rocketLoadingSchedule, rocketExplosionRadius, rocketRange,
 				shipMovementSpeed, shipRedeploySchedule, shipSize, shieldUsingSchedule, shieldRenewingSchedule,
-				upgradeScore, movementSpeedMultiplier, meteorites, players, spaceships);
+				upgradeScore, movementSpeedMultiplier, meteorites, players, startingPositions);
 	}
 
 	@Override
@@ -186,7 +192,7 @@ public class Game {
 				+ ", shipRedeploySchedule=" + shipRedeploySchedule + ", shipSize=" + shipSize + ", shieldUsingSchedule="
 				+ shieldUsingSchedule + ", shieldRenewingSchedule=" + shieldRenewingSchedule + ", upgradeScore="
 				+ upgradeScore + ", movementSpeedMultiplier=" + movementSpeedMultiplier + ", meteorites=" + meteorites
-				+ ", players=" + players + ", spaceships=" + spaceships + "]";
+				+ ", players=" + players + ", spaceships=" + startingPositions + "]";
 	}
 
 	public static Builder builder() {
@@ -214,7 +220,7 @@ public class Game {
 		private double movementSpeedMultiplier;
 		private List<Meteorite> meteorites = Collections.emptyList();
 		private List<Player> players = Collections.emptyList();
-		private List<Ship> spaceships = Collections.emptyList();
+		private Map<String, Ship> startingPositions = Collections.emptyMap();
 
 		private Builder() {
 		}
@@ -320,7 +326,8 @@ public class Game {
 		}
 
 		public Builder withSpaceships(List<Ship> spaceships) {
-			this.spaceships = spaceships;
+			this.startingPositions = spaceships.stream()
+					.collect(Collectors.toMap(Ship::getOwner, identity()));
 			return this;
 		}
 

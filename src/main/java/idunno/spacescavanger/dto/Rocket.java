@@ -11,10 +11,11 @@ public class Rocket {
 	private final int rocketID;
 	private final Point position;
 	private final String owner;
+	private double distance;
 
 	private Rocket(Builder builder) {
 		this.rocketID = builder.rocketID;
-		this.position = new Point(builder.rocketY, builder.rocketX);
+		this.position = new Point(builder.rocketX, builder.rocketY);
 		this.owner = builder.owner;
 	}
 
@@ -30,6 +31,14 @@ public class Rocket {
 		return owner;
 	}
 	
+	public double getDistance() {
+		return distance;
+	}
+
+	void setDistance(double distance) {
+		this.distance = distance;
+	}
+
 	public boolean idEquals(Rocket other) {
 	    return this.getRocketID() == other.getRocketID();
 	}
