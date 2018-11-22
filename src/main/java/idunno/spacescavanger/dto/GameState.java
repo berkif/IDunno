@@ -1,5 +1,6 @@
 package idunno.spacescavanger.dto;
 
+import static idunno.spacescavanger.strategy.Strategy.BOT_NAME;
 import static idunno.spacescavanger.strategy.Strategy.OUR_NAME;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -173,7 +174,7 @@ public class GameState {
 			meteoriteStates
 			.forEach(meteorite -> 
 					meteorite.setDistanceFromUs(meteorite.getPosition().distance(idunnoShip.getPosition()))
-						.setDistanceFromEnemy(meteorite.getPosition().distance(enemyShips.get("bot1").getPosition())));
+						.setDistanceFromEnemy(BOT_NAME, meteorite.getPosition().distance(enemyShips.get(BOT_NAME).getPosition())));
 			rocketStates.forEach(rocket -> 
 					rocket.setDistance(rocket.getPosition().distance(idunnoShip.getPosition())));
 			ourScore = standings.stream()

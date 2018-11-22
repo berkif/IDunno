@@ -75,7 +75,7 @@ public class OtherStrategy extends Strategy {
 	}
 	private Predicate<Meteorite> coserToUsPredicate(Ship ourShip, Ship enemyShip) {
 		return meteorite -> {
-			return meteorite.getDistanceFromUs() / ourShip.getSpeed() < meteorite.getDistanceFromEnemy() / enemyShip.getSpeed(); 
+			return meteorite.getDistanceFromUs() / ourShip.getSpeed() < meteorite.getDistanceFromEnemy(BOT_NAME) / enemyShip.getSpeed(); 
 		};
 	}
 	private Optional<Point> getRocketMoveToPosition(GameState lastState, GameState currentState) {
@@ -113,7 +113,7 @@ public class OtherStrategy extends Strategy {
 		}
 		Line path = new Line(source, target);
 		return state.getMeteoriteStates().stream()
-			.filter(m -> !excludedMeteor.filter(excluded -> excluded.getDistanceFromUs() > excluded.getDistanceFromEnemy()).isPresent() || m.getMeteoriteID() != excludedMeteor.get().getMeteoriteID())
+			.filter(m -> !excludedMeteor.filter(excluded -> excluded.getDistanceFromUs() > excluded.getDistanceFromEnemy(BOT_NAME)).isPresent() || m.getMeteoriteID() != excludedMeteor.get().getMeteoriteID())
 			.allMatch(notInTheWay(path));
 //		for (Meteorite meteor : state.getMeteoriteStates()) {
 //			if (CommonMethods.isIntersect(path, new Circle(meteor.getPosition(), meteor.getMeteoriteRadius()))) {

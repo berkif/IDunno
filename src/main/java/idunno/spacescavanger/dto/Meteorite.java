@@ -1,5 +1,7 @@
 package idunno.spacescavanger.dto;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,12 +14,13 @@ public class Meteorite {
 	private final int meteoriteID;
 	private final Point position;
 	private double distanceFromUs;
-	private double distanceFromEnemy;
+	private final Map<String, Double> distanceFromEnemies;
 
 	private Meteorite(Builder builder) {
 		this.meteoriteRadius = builder.meteoriteRadius;
 		this.meteoriteID = builder.meteoriteID;
 		this.position = new Point(builder.meteoriteX, builder.meteoriteY);
+		this.distanceFromEnemies = new HashMap<>();
 	}
 
 	public int getMeteoriteRadius() {
@@ -41,12 +44,12 @@ public class Meteorite {
 		return this;
 	}
 
-	public double getDistanceFromEnemy() {
-		return distanceFromEnemy;
+	public double getDistanceFromEnemy(String name) {
+		return distanceFromEnemies.get(name);
 	}
 
-	Meteorite setDistanceFromEnemy(double distanceFromEnemy) {
-		this.distanceFromEnemy = distanceFromEnemy;
+	Meteorite setDistanceFromEnemy(String name, double distance) {
+		distanceFromEnemies.put(name, distance);
 		return this;
 	}
 
