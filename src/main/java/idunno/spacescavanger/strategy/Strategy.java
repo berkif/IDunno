@@ -12,6 +12,7 @@ import idunno.spacescavanger.dto.Ship;
 
 public abstract class Strategy {
 	public static final String OUR_NAME = "idunno";
+	public static final String BOT_NAME = "bot1";
 	protected final Game game;
 	private Optional<GameState> lastState;
 	private final RocketPathCalculator rocketPathCalculator = new RocketPathCalculator();
@@ -26,7 +27,7 @@ public abstract class Strategy {
 		GameResponse response;
 		gameState.setRocketPaths(rocketPathCalculator.calculate(lastState, gameState, game.getRocketRange()));
 		gameState.getIdunnoShip().calculateSpeed(game.getShipMovementSpeed(), game.getMovementSpeedMultiplier());
-		gameState.getEnemyShip().calculateSpeed(game.getShipMovementSpeed(), game.getMovementSpeedMultiplier());
+		gameState.getEnemy(BOT_NAME).calculateSpeed(game.getShipMovementSpeed(), game.getMovementSpeedMultiplier());
 		if (lastState.isPresent())
 			response = suggestMove(lastState.get(), gameState);
 		else

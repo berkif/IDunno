@@ -41,7 +41,7 @@ public class OtherStrategy extends Strategy {
 
 	private Optional<Point> getShipMoveToPosition(GameState currentState) {
 		Optional<Point> moveToPosition = Optional.empty();
-		Ship enemyShip = currentState.getEnemyShip();
+		Ship enemyShip = currentState.getEnemy(BOT_NAME);
 		Ship idunnoShip = currentState.getIdunnoShip();
 		Point enemyPos = enemyShip.getPosition();
 		if (shieldOnCooldown(currentState.getTimeElapsed()) && weAreInDanger(currentState)) {
@@ -83,15 +83,16 @@ public class OtherStrategy extends Strategy {
 //			return Optional.empty();
 //		}
 		Optional<Meteorite> closestMeteoritePosToEnemy = CommonMethods
-				.getClosestMeteoritePosToEnemy(currentState.getMeteoriteStates(), currentState.getEnemyShip().getPosition());
-		return getTarget(currentState, closestMeteoritePosToEnemy, lastState.getEnemyShip());
+				.getClosestMeteoritePosToEnemy(currentState.getMeteoriteStates(), currentState.getEnemy(BOT_NAME).getPosition());
+		return getTarget(currentState, closestMeteoritePosToEnemy, lastState.getEnemy(BOT_NAME));
 	}
 	private Optional<Point> getTarget(GameState gameStatus,
 			Optional<Meteorite> closestMeteoritePosToEnemy, Ship enemyShipLastState) {
+		Ship botShip = gameStatus.getEnemy(BOT_NAME);
 		Optional<Point> target = Optional.empty();
-			Point targetVelocity = calculateVelocity(enemyShipLastState, gameStatus.getEnemyShip());
-			if (gameStatus.getEnemyShip().getPosition().distance(gameStatus.getIdunnoShip().getPosition()) < game.getRocketRange()) {
-				target = getShootTargetPosition(1, gameStatus.getIdunnoShip().getPosition(), gameStatus.getEnemyShip().getPosition(), targetVelocity, closestMeteoritePosToEnemy)
+			Point targetVelocity = calculateVelocity(enemyShipLastState, botShip);
+			if (botShip.getPosition().distance(gameStatus.getIdunnoShip().getPosition()) < game.getRocketRange()) {
+				target = getShootTargetPosition(1, gameStatus.getIdunnoShip().getPosition(), botShip.getPosition(), targetVelocity, closestMeteoritePosToEnemy)
 						.filter(t -> willHitTarget(gameStatus.getIdunnoShip().getPosition(), t,
 							gameStatus, closestMeteoritePosToEnemy))
 						;

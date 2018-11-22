@@ -2,27 +2,19 @@ package idunno.spacescavanger;
 
 import static idunno.spacescavanger.dto.GameStatus.ABORTED;
 import static idunno.spacescavanger.dto.GameStatus.ENDED;
-import static idunno.spacescavanger.strategy.Comparators.compareByDistance;
 import static java.util.Optional.empty;
-import static java.util.function.Function.identity;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 
-import idunno.spacescavanger.coordgeom.Point;
 import idunno.spacescavanger.dto.Game;
 import idunno.spacescavanger.dto.GameResponse;
 import idunno.spacescavanger.dto.GameState;
 import idunno.spacescavanger.dto.GameStatus;
-import idunno.spacescavanger.dto.Meteorite;
-import idunno.spacescavanger.dto.Ship;
-import idunno.spacescavanger.strategy.DummyFeriDummyStrat;
 import idunno.spacescavanger.strategy.OtherStrategy;
 import idunno.spacescavanger.strategy.Strategy;
 
