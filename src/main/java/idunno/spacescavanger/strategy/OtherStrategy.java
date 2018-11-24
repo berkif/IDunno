@@ -125,7 +125,11 @@ public class OtherStrategy extends Strategy {
 						;
 			}
 			double closestmeteordistanceFromUs = closestMeteoritePosToEnemy.get().getDistanceFromUs();
-			if (!target.isPresent() && gameStatus.getMeteoriteStates().size() > 1 && closestmeteordistanceFromUs > game.getRocketExplosionRadius() + closestMeteoritePosToEnemy.get().getMeteoriteRadius() && closestmeteordistanceFromUs < game.getRocketRange()
+			if (!target.isPresent() 
+					&& gameStatus.getMeteoriteStates().size() > 1 
+					&& closestmeteordistanceFromUs > game.getRocketExplosionRadius() + closestMeteoritePosToEnemy.get().getMeteoriteRadius()
+					&& closestmeteordistanceFromUs < game.getRocketRange()
+					&& closestmeteordistanceFromUs / gameStatus.getIdunnoShip().getSpeed() > closestMeteoritePosToEnemy.get().getDistanceFromEnemy(enemyShipLastState.getOwner()) / enemyShipLastState.getSpeed()
 					&& willHitTarget(gameStatus.getIdunnoShip().getPosition(), closestMeteoritePosToEnemy.map(Meteorite::getPosition).orElse(null),
 						gameStatus, closestMeteoritePosToEnemy)) {
 				target = closestMeteoritePosToEnemy.map(Meteorite::getPosition);
