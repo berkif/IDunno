@@ -1,6 +1,5 @@
 package idunno.spacescavanger.dto;
 
-import static idunno.spacescavanger.strategy.Strategy.BOT_NAME;
 import static idunno.spacescavanger.strategy.Strategy.OUR_NAME;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -15,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import idunno.spacescavanger.coordgeom.Line;
+import idunno.spacescavanger.strategy.CommonMethods;
 
 @JsonDeserialize(builder = GameState.Builder.class)
 public class GameState {
@@ -60,6 +60,14 @@ public class GameState {
 
 	public Ship getEnemy(String name) {
 		return enemyShips.get(name);
+	}
+	
+	public Ship getClosestEnemy() {
+		return this.getEnemyShips().stream()
+				.min((ship1, ship2) -> Double.compare(
+						CommonMethods.distanceBetweenTwoPoint(idunnoShip.getPosition(), ship1.getPosition()), 
+						CommonMethods.distanceBetweenTwoPoint(idunnoShip.getPosition(), ship2.getPosition())))
+				.get();
 	}
 
 	public Ship getIdunnoShip() {
@@ -171,10 +179,11 @@ public class GameState {
 		}
 
 		public GameState build() {
+			enemyShips.keySet().forEach( enemy ->
 			meteoriteStates
 			.forEach(meteorite -> 
 					meteorite.setDistanceFromUs(meteorite.getPosition().distance(idunnoShip.getPosition()))
-						.setDistanceFromEnemy(BOT_NAME, meteorite.getPosition().distance(enemyShips.get(BOT_NAME).getPosition())));
+						.setDistanceFromEnemy(enemy, meteorite.getPosition().distance(enemyShips.get(enemy).getPosition()))));
 			rocketStates.forEach(rocket -> 
 					rocket.setDistance(rocket.getPosition().distance(idunnoShip.getPosition())));
 			ourScore = standings.stream()

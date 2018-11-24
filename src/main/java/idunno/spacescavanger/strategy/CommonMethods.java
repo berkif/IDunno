@@ -31,9 +31,9 @@ public class CommonMethods {
 		return result;
 	}
 
-	public static Optional<Meteorite> getClosestMeteoritePosToEnemy(List<Meteorite> meteoriteStates, Point position) {
+	public static Optional<Meteorite> getClosestMeteoritePosToEnemy(List<Meteorite> meteoriteStates, Point position, String enemyName) {
 		return meteoriteStates.stream()
-				.min(compareByDistanceFromEnemy());
+				.min(compareByDistanceFromEnemy(enemyName));
 	}
 
 	public static double distanceBetweenTwoPoint(Point a, Point b) {
