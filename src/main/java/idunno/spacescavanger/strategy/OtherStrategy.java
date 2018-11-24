@@ -2,6 +2,8 @@ package idunno.spacescavanger.strategy;
 
 import static idunno.spacescavanger.strategy.Comparators.compareByScore;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -43,36 +45,52 @@ public class OtherStrategy extends Strategy {
 
 	private Optional<Point> getShipMoveToPosition(GameState currentState) {
 		Optional<Point> moveToPosition = Optional.empty();
-		Ship enemyShip = currentState.getEnemy(getEnemyName(currentState));
 		Ship idunnoShip = currentState.getIdunnoShip();
-		Point enemyPos = enemyShip.getPosition();
-		if (currentState.getMeteoriteStates().size() == 1
-				|| currentState.getMeteoriteStates().stream().filter(coserToUsPredicate(idunnoShip, enemyShip)).allMatch(m -> m.getMeteoriteRadius() < 30)) {
-//			if (!hateU.isPresent()) {
-//				hateU = currentState.getStandings().stream()
-//						.filter(s -> !OUR_NAME.equals(s.getUserID()))
-//						.min((enemy1, enemy2) -> Integer.compare(enemy1.getScore(), enemy2.getScore()))
-//						.map(Standings::getUserID);
-//				enemyPos = currentState.getEnemy(hateU.get()).getPosition();
-//			}
-		    moveToPosition = Optional.of(new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() *2., enemyPos.y() - (double) game.getRocketExplosionRadius() *2.));
+		Optional<Rocket> weAreInDanger = weAreInDanger(currentState);
+		if (shieldOnCooldown(currentState.getTimeElapsed()) && weAreInDanger.isPresent()) {
+			moveToPosition = getDefensiveMoveList(idunnoShip.getPosition()).stream()
+					.max(Comparators.compareByDistance(weAreInDanger.get().getPosition()));
 		} else {
-				moveToPosition = currentState.getMeteoriteStates()
-						.stream()
-						.max(compareByScore()) // teljesen ugyan az mint a régiben, csak comparatorral
-						.map(Meteorite::getPosition);
-//			}
+			
+			
+			Ship enemyShip = currentState.getEnemy(getEnemyName(currentState));
+			Point enemyPos = enemyShip.getPosition();
+			if (currentState.getMeteoriteStates().size() == 1
+					|| currentState.getMeteoriteStates().stream().filter(coserToUsPredicate(idunnoShip, enemyShip)).allMatch(m -> m.getMeteoriteRadius() < 30)) {
+	//			if (!hateU.isPresent()) {
+	//				hateU = currentState.getStandings().stream()
+	//						.filter(s -> !OUR_NAME.equals(s.getUserID()))
+	//						.min((enemy1, enemy2) -> Integer.compare(enemy1.getScore(), enemy2.getScore()))
+	//						.map(Standings::getUserID);
+	//				enemyPos = currentState.getEnemy(hateU.get()).getPosition();
+	//			}
+			    moveToPosition = Optional.of(new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() *2., enemyPos.y() - (double) game.getRocketExplosionRadius() *2.));
+			} else {
+					moveToPosition = currentState.getMeteoriteStates()
+							.stream()
+							.max(compareByScore()) // teljesen ugyan az mint a régiben, csak comparatorral
+							.map(Meteorite::getPosition);
+	//			}
+			}
 		}
 		return moveToPosition;
 	}
-
-	private boolean weAreInDanger(GameState currentState) {
+	private List<Point> getDefensiveMoveList(Point current) {
+		return List.of(
+			new Point(current.x() + game.getRocketExplosionRadius(), current.y()+ game.getRocketExplosionRadius()),
+			new Point(current.x() - game.getRocketExplosionRadius(), current.y()- game.getRocketExplosionRadius()),
+			new Point(current.x() + game.getRocketExplosionRadius(), current.y()- game.getRocketExplosionRadius()),
+			new Point(current.x() - game.getRocketExplosionRadius(), current.y()+ game.getRocketExplosionRadius())
+				);
+	}
+	private Optional<Rocket> weAreInDanger(GameState currentState) {
 		// az a baj, hogy a mozgásunk nincs belekalkulálva igy akkor is kiírja, ha elmozgunk majd igy is ugy is
 		Circle circle = new Circle(currentState.getIdunnoShip().getPosition(), game.getRocketExplosionRadius());
 		return currentState.getRocketStates().stream()
 			.filter(r -> !r.getOwner().equals(OUR_NAME))
-			.map(r -> currentState.getRocketPaths().get(r.getRocketID()))
-			.anyMatch(path -> CommonMethods.isIntersect(path, circle));
+			.filter(r -> Objects.nonNull(currentState.getRocketPaths().get(r.getRocketID()))
+				&& CommonMethods.isIntersect(currentState.getRocketPaths().get(r.getRocketID()), circle))
+			.findAny();
 	}
 
 	private Point fallBackMove() {
