@@ -48,13 +48,13 @@ public class OtherStrategy extends Strategy {
 		Point enemyPos = enemyShip.getPosition();
 		if (currentState.getMeteoriteStates().size() == 1
 				|| currentState.getMeteoriteStates().stream().filter(coserToUsPredicate(idunnoShip, enemyShip)).allMatch(m -> m.getMeteoriteRadius() < 30)) {
-			if (!hateU.isPresent()) {
-				hateU = currentState.getStandings().stream()
-						.filter(s -> !OUR_NAME.equals(s.getUserID()))
-						.max((enemy1, enemy2) -> Integer.compare(enemy1.getScore(), enemy2.getScore()))
-						.map(Standings::getUserID);
-				enemyPos = currentState.getEnemy(hateU.get()).getPosition();
-			}
+//			if (!hateU.isPresent()) {
+//				hateU = currentState.getStandings().stream()
+//						.filter(s -> !OUR_NAME.equals(s.getUserID()))
+//						.min((enemy1, enemy2) -> Integer.compare(enemy1.getScore(), enemy2.getScore()))
+//						.map(Standings::getUserID);
+//				enemyPos = currentState.getEnemy(hateU.get()).getPosition();
+//			}
 		    moveToPosition = Optional.of(new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() *2., enemyPos.y() - (double) game.getRocketExplosionRadius() *2.));
 		} else {
 				moveToPosition = currentState.getMeteoriteStates()
@@ -106,7 +106,8 @@ public class OtherStrategy extends Strategy {
 							gameStatus, closestMeteoritePosToEnemy))
 						;
 			}
-			if (!target.isPresent() && gameStatus.getMeteoriteStates().size() > 1 && closestMeteoritePosToEnemy.get().getDistanceFromUs() < game.getRocketRange()
+			double closestmeteordistanceFromUs = closestMeteoritePosToEnemy.get().getDistanceFromUs();
+			if (!target.isPresent() && gameStatus.getMeteoriteStates().size() > 1 && closestmeteordistanceFromUs > game.getRocketExplosionRadius() + closestMeteoritePosToEnemy.get().getMeteoriteRadius() && closestmeteordistanceFromUs < game.getRocketRange()
 					&& willHitTarget(gameStatus.getIdunnoShip().getPosition(), closestMeteoritePosToEnemy.map(Meteorite::getPosition).orElse(null),
 						gameStatus, closestMeteoritePosToEnemy)) {
 				target = closestMeteoritePosToEnemy.map(Meteorite::getPosition);
@@ -138,7 +139,11 @@ public class OtherStrategy extends Strategy {
 
 	}
 	private boolean shouldUpgrade(GameState currentState) {
-		return false; //currentState.getOurScore() >= game.getUpgradeScore() && currentState.getMeteoriteStates().size() >= 3;
+		int sumOfMeteoritePoints = currentState.getMeteoriteStates()
+				.stream()
+				.mapToInt(Meteorite::getMeteoriteRadius)
+				.sum();
+		return currentState.getOurScore() >= game.getUpgradeScore() && sumOfMeteoritePoints >= 2 * game.getUpgradeScore();
 	}
 
 	private boolean shouldTurnOnShield(GameState currentState) {
@@ -154,7 +159,7 @@ public class OtherStrategy extends Strategy {
 	    Line rocketPath = gameStatus.getRocketPaths().get(rocket.getRocketID());
 	    if (rocketPath == null) return false;
 	    boolean aboutToReachEndOfPath = CommonMethods.distanceBetweenTwoPoint(rocketPath.getEndPoint(), rocket.getPosition()) <= 20.;
-	    boolean aboutToHitUs = CommonMethods.distanceBetweenTwoPoint(ourPosition, rocket.getPosition()) <= ((double) game.getRocketExplosionRadius());
+	    boolean aboutToHitUs = CommonMethods.distanceBetweenTwoPoint(ourPosition, rocket.getPosition()) <= (double) (game.getRocketExplosionRadius() / 2);
 	    boolean aboutToHitMeteorite = gameStatus.getMeteoriteStates().stream()
 	        .map(meteorite -> new Circle(meteorite.getPosition(), meteorite.getMeteoriteRadius()))
 	        .filter(circle -> CommonMethods.isIntersect(rocketPath, circle))

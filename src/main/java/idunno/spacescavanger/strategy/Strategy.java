@@ -11,7 +11,7 @@ import idunno.spacescavanger.dto.Meteorite;
 import idunno.spacescavanger.dto.Ship;
 
 public abstract class Strategy {
-	public static final String OUR_NAME = "idunno-2";
+	public static final String OUR_NAME = "idunno";
 	protected final Game game;
 	private Optional<GameState> lastState;
 	private final RocketPathCalculator rocketPathCalculator = new RocketPathCalculator();
