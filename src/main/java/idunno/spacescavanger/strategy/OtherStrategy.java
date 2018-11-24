@@ -2,6 +2,7 @@ package idunno.spacescavanger.strategy;
 
 import static idunno.spacescavanger.strategy.Comparators.compareByScore;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class OtherStrategy extends Strategy {
 			Ship enemyShip = currentState.getEnemy(getEnemyName(currentState));
 			Point enemyPos = enemyShip.getPosition();
 			if (currentState.getMeteoriteStates().size() == 1
-					|| currentState.getMeteoriteStates().stream().filter(coserToUsPredicate(idunnoShip, enemyShip)).allMatch(m -> m.getMeteoriteRadius() < 30)) {
+					|| currentState.getMeteoriteStates().stream().filter(closerToUsPredicate(idunnoShip, currentState.getEnemyShips())).allMatch(m -> m.getMeteoriteRadius() < 30)) {
 			    moveToPosition = ratapadasPos(enemyPos).stream().min(Comparators.compareByDistance(idunnoShip.getPosition()));
 			} else {
 					moveToPosition = currentState.getMeteoriteStates()
@@ -98,10 +99,9 @@ public class OtherStrategy extends Strategy {
 	private Point fallBackMove() {
 		return new Point(0, 0);
 	}
-	private Predicate<Meteorite> coserToUsPredicate(Ship ourShip, Ship enemyShip) {
-		return meteorite -> {
-			return meteorite.getDistanceFromUs() / ourShip.getSpeed() < meteorite.getDistanceFromEnemy(enemyShip.getOwner()) / enemyShip.getSpeed(); 
-		};
+	private Predicate<Meteorite> closerToUsPredicate(Ship ourShip, Collection<Ship> enemyShips) {
+		return meteorite -> enemyShips.stream()
+			.allMatch(enemyShip -> meteorite.getDistanceFromUs() / ourShip.getSpeed() < meteorite.getDistanceFromEnemy(enemyShip.getOwner()) / enemyShip.getSpeed());
 	}
 	private Optional<Point> getRocketMoveToPosition(GameState lastState, GameState currentState) {
 //		if (rocketOnCooldown(currentState.getTimeElapsed())) {

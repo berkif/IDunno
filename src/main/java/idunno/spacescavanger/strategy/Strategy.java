@@ -26,7 +26,7 @@ public abstract class Strategy {
 		GameResponse response;
 		gameState.setRocketPaths(rocketPathCalculator.calculate(lastState, gameState, game.getRocketRange()));
 		gameState.getIdunnoShip().calculateSpeed(game.getShipMovementSpeed(), game.getMovementSpeedMultiplier());
-		gameState.getEnemy(gameState.getClosestEnemy().getOwner()).calculateSpeed(game.getShipMovementSpeed(), game.getMovementSpeedMultiplier());
+		gameState.getEnemyShips().forEach(enemy -> enemy.calculateSpeed(game.getShipMovementSpeed(), game.getMovementSpeedMultiplier()));
 		if (lastState.isPresent())
 			response = suggestMove(lastState.get(), gameState);
 		else
