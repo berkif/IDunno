@@ -44,7 +44,7 @@ public abstract class Strategy {
 	}
 
 	boolean shieldOnCooldown(int timeElapsed) {
-		return lastShieldUsedAt > 0 && (timeElapsed - lastShieldUsedAt) / 1000 < game.getShieldRenewingSchedule();
+		return lastShieldUsedAt + game.getShieldUsingSchedule()  > 0 && (timeElapsed - lastShieldUsedAt + game.getShieldUsingSchedule()) / 1000 < game.getShieldRenewingSchedule();
 	}
 	boolean rocketOnCooldown(int timeElapsed) {
 		return lastRocketLunchedAt > 0 && (timeElapsed - lastRocketLunchedAt) / 1000 < game.getRocketLoadingSchedule();
