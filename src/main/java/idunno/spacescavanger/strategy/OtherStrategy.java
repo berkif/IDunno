@@ -44,10 +44,6 @@ public class OtherStrategy extends Strategy {
 		Ship enemyShip = currentState.getEnemy(BOT_NAME);
 		Ship idunnoShip = currentState.getIdunnoShip();
 		Point enemyPos = enemyShip.getPosition();
-		if (shieldOnCooldown(currentState.getTimeElapsed()) && weAreInDanger(currentState)) {
-			System.out.println("no shield and we will die");
-			
-		}
 		if (currentState.getMeteoriteStates().size() == 1
 				|| currentState.getMeteoriteStates().stream().filter(coserToUsPredicate(idunnoShip, enemyShip)).allMatch(m -> m.getMeteoriteRadius() < 30)) {
 		    moveToPosition = Optional.of(new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() *2., enemyPos.y() - (double) game.getRocketExplosionRadius() *2.));
