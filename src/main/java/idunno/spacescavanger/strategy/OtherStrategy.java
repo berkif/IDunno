@@ -47,23 +47,16 @@ public class OtherStrategy extends Strategy {
 		Optional<Point> moveToPosition = Optional.empty();
 		Ship idunnoShip = currentState.getIdunnoShip();
 		Optional<Rocket> weAreInDanger = weAreInDanger(currentState);
-		if (shieldOnCooldown(currentState.getTimeElapsed()) && weAreInDanger.isPresent()) {
-			moveToPosition = getDefensiveMoveList(idunnoShip.getPosition()).stream()
-					.max(Comparators.compareByDistance(weAreInDanger.get().getPosition()));
-		} else {
+//		if (shieldOnCooldown(currentState.getTimeElapsed()) && weAreInDanger.isPresent()) {
+//			moveToPosition = getDefensiveMoveList(idunnoShip.getPosition()).stream()
+//					.max(Comparators.compareByDistance(weAreInDanger.get().getPosition()));
+//		} else {
 			
 			
 			Ship enemyShip = currentState.getEnemy(getEnemyName(currentState));
 			Point enemyPos = enemyShip.getPosition();
 			if (currentState.getMeteoriteStates().size() == 1
 					|| currentState.getMeteoriteStates().stream().filter(coserToUsPredicate(idunnoShip, enemyShip)).allMatch(m -> m.getMeteoriteRadius() < 30)) {
-	//			if (!hateU.isPresent()) {
-	//				hateU = currentState.getStandings().stream()
-	//						.filter(s -> !OUR_NAME.equals(s.getUserID()))
-	//						.min((enemy1, enemy2) -> Integer.compare(enemy1.getScore(), enemy2.getScore()))
-	//						.map(Standings::getUserID);
-	//				enemyPos = currentState.getEnemy(hateU.get()).getPosition();
-	//			}
 			    moveToPosition = ratapadasPos(enemyPos).stream().min(Comparators.compareByDistance(idunnoShip.getPosition()));
 			} else {
 					moveToPosition = currentState.getMeteoriteStates()
@@ -72,7 +65,7 @@ public class OtherStrategy extends Strategy {
 							.map(Meteorite::getPosition);
 	//			}
 			}
-		}
+//		}
 		return moveToPosition;
 	}
 	

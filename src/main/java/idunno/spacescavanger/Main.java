@@ -32,7 +32,7 @@ public class Main {
 
 		ClientEndpoint client = new ClientEndpoint();
 		webSocket.connectToServer(client, config,
-			URI.create("ws://172.16.0.180:8080/JavaChallenge2018/websocket"));
+			URI.create("ws://172.16.0.5:8080/JavaChallenge2018/websocket"));
 		System.in.read();
 		client.stop();
 	}

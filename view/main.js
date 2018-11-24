@@ -25,7 +25,7 @@ function drawInitial() {
     });
 }
 function fillStyle(obj) {
-    const myName = 'idunno-2';
+    const myName = 'idunno';
     return obj.owner != myName ? '#DF0101' : '#ACFA58';
 }
 function drawState(state) {
