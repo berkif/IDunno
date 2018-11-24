@@ -64,7 +64,7 @@ public class OtherStrategy extends Strategy {
 	//						.map(Standings::getUserID);
 	//				enemyPos = currentState.getEnemy(hateU.get()).getPosition();
 	//			}
-			    moveToPosition = Optional.of(new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() *2., enemyPos.y() - (double) game.getRocketExplosionRadius() *2.));
+			    moveToPosition = ratapadasPos(enemyPos).stream().min(Comparators.compareByDistance(idunnoShip.getPosition()));
 			} else {
 					moveToPosition = currentState.getMeteoriteStates()
 							.stream()
@@ -74,6 +74,15 @@ public class OtherStrategy extends Strategy {
 			}
 		}
 		return moveToPosition;
+	}
+	
+	private List<Point> ratapadasPos(Point enemyPos) {
+		return List.of(
+			new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() *2., enemyPos.y() - (double) game.getRocketExplosionRadius() *2.),
+			new Point(enemyPos.x() + (double) game.getRocketExplosionRadius() *2., enemyPos.y() + (double) game.getRocketExplosionRadius() *2.),
+			new Point(enemyPos.x() + (double) game.getRocketExplosionRadius() *2., enemyPos.y() - (double) game.getRocketExplosionRadius() *2.),
+			new Point(enemyPos.x() - (double) game.getRocketExplosionRadius() *2., enemyPos.y() + (double) game.getRocketExplosionRadius() *2.)
+				);
 	}
 	private List<Point> getDefensiveMoveList(Point current) {
 		return List.of(
