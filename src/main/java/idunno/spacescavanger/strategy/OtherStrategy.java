@@ -48,6 +48,17 @@ public class OtherStrategy extends Strategy {
 		Optional<Point> moveToPosition = Optional.empty();
 		Ship idunnoShip = currentState.getIdunnoShip();
 		Optional<Rocket> weAreInDanger = weAreInDanger(currentState);
+		if (shieldOnCooldown(currentState.getTimeElapsed()) && weAreInDanger.isPresent()) {
+			Rocket incomingRocket = weAreInDanger.get();
+			Line path = currentState.getRocketPaths().get(incomingRocket.getRocketID());
+			boolean wilHitMeteor =	currentState.getMeteoriteStates().stream()
+								.filter(m -> m.getDistanceFromUs() < m.getPosition().distance(incomingRocket.getPosition()))
+								.anyMatch(m -> CommonMethods.isIntersect(path, new Circle(m.getPosition(), m.getMeteoriteRadius())));
+			if (!wilHitMeteor) {
+				moveToPosition = getDefensiveMoveList(idunnoShip.getPosition()).stream()
+						.max(Comparators.compareByDistance(weAreInDanger.get().getPosition()));
+			}
+		}
 //		if (shieldOnCooldown(currentState.getTimeElapsed()) && weAreInDanger.isPresent()) {
 //			moveToPosition = getDefensiveMoveList(idunnoShip.getPosition()).stream()
 //					.max(Comparators.compareByDistance(weAreInDanger.get().getPosition()));
